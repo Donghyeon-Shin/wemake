@@ -47,10 +47,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
 // 각 페이지의 내용
 export default function App() {
   return (
-    <>
+    <div className='py-28'>
       <Navigation isLoggedIn={true} hasNotifications={true} hasMessages={true} />
       <Outlet />
-    </>
+    </div>
   );
 }
 
