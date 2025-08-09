@@ -1,3 +1,4 @@
+import { DotIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar';
 import { Card, CardFooter, CardHeader, CardTitle } from '~/common/components/ui/card';
@@ -34,7 +35,7 @@ export function PostCard({
             <div className='flex gap-2 text-sm leading-tight text-muted-foreground'>
               <span>{author}</span>
               <span>{category}</span>
-              <span>•</span>
+              <DotIcon className='size-4' />
               <span>{timeAgo}</span>
             </div>
           </div>
