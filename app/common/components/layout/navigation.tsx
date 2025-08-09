@@ -7,6 +7,17 @@ import {
   UserIcon,
 } from 'lucide-react';
 import { Link } from 'react-router';
+import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar';
+import { Button } from '~/common/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/common/components/ui/dropdown-menu';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -17,18 +28,7 @@ import {
   navigationMenuTriggerStyle,
 } from '~/common/components/ui/navigation-menu';
 import { Separator } from '~/common/components/ui/separator';
-import { cn } from '../../../lib/utils';
-import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import { Button } from '../ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
+import { cn } from '~/lib/utils';
 
 const menus: {
   name: string;
