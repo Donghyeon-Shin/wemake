@@ -1,18 +1,30 @@
 import { DateTime } from 'luxon';
-import { data, isRouteErrorResponse, Link, type MetaFunction } from 'react-router';
+import { data, isRouteErrorResponse, Link } from 'react-router';
 import { z } from 'zod';
-import { Hero } from '../../../common/components/layout/hero';
-import ProductPagination from '../../../common/components/layout/product-pagination';
-import { Button } from '../../../common/components/ui/button';
-import { ProductCard } from '../components/product-card';
+import { Hero } from '~/common/components/layout/hero';
+import ProductPagination from '~/common/components/layout/product-pagination';
+import { Button } from '~/common/components/ui/button';
+import { ProductCard } from '~/features/products/components/product-card';
 import type { Route } from './+types/weekly-leaderboards';
-
-export const meta: MetaFunction = () => [{ title: 'Weekly Leaderboards | wemake' }];
 
 const paramsSchema = z.object({
   year: z.coerce.number(),
   week: z.coerce.number(),
 });
+
+export const meta: Route.MetaFunction = ({ params }) => {
+  const date = DateTime.fromObject({
+    year: Number(params.year),
+    weekNumber: Number(params.week),
+  })
+    .setZone('Asia/Seoul')
+    .setLocale('ko');
+  return [
+    {
+      title: `The best of the week ${date.startOf('week').toLocaleString(DateTime.DATE_SHORT)} - ${date.endOf('week').toLocaleString(DateTime.DATE_SHORT)} | wemake`,
+    },
+  ];
+};
 
 export const loader = ({ params }: Route.LoaderArgs) => {
   const { success, data: parsedData } = paramsSchema.safeParse(params);
