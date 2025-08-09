@@ -27,7 +27,7 @@ export const loader = ({ params }: Route.LoaderArgs) => {
   if (!date.isValid) {
     throw data({ error_code: 'invalid_date', message: 'Invalid date' }, { status: 400 });
   }
-  const today = DateTime.now().startOf('day');
+  const today = DateTime.now().startOf('week');
   if (date > today) {
     throw data({ error_code: 'future_date', message: 'Future date' }, { status: 400 });
   }
