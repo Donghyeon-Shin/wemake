@@ -9,7 +9,7 @@ export interface PostCardProps {
   author: string;
   authorAvatarUrl: string;
   category: string;
-  timeAgo: string;
+  postedAt: string;
   className?: string;
 }
 
@@ -19,7 +19,7 @@ export function PostCard({
   author,
   authorAvatarUrl,
   category,
-  timeAgo,
+  postedAt,
   className,
 }: PostCardProps) {
   return (
@@ -36,7 +36,7 @@ export function PostCard({
               <span>{author}</span>
               <span>{category}</span>
               <DotIcon className='size-4' />
-              <span>{timeAgo}</span>
+              <span>{postedAt}</span>
             </div>
           </div>
         </CardHeader>

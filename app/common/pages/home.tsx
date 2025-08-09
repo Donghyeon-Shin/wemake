@@ -1,6 +1,7 @@
 import { Link, type MetaFunction } from 'react-router';
 import { PostCard } from '~/features/community/components/post-card';
 import { IdeaCard } from '~/features/ideas/components/idea-card';
+import { JobCard } from '~/features/jobs/components/job-card';
 import { ProductCard } from '~/features/products/components/product-card';
 import { Button } from '../components/ui/button';
 
@@ -21,7 +22,7 @@ export default function Home() {
             <Link to='/products/leaderboard'>Explore all products &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 10 }).map((_, index) => (
+        {Array.from({ length: 11 }).map((_, index) => (
           <ProductCard
             key={index}
             to={`/products/${index}`}
@@ -43,7 +44,7 @@ export default function Home() {
             <Link to='/community'>Explore all discussions &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 10 }).map((_, index) => (
+        {Array.from({ length: 11 }).map((_, index) => (
           <PostCard
             key={index}
             id={`postId-${index}`}
@@ -51,7 +52,7 @@ export default function Home() {
             author='Donghyeon'
             authorAvatarUrl='https://github.com/apple.png'
             category='Productivity'
-            timeAgo='12 hours ago'
+            postedAt='12 hours ago'
           />
         ))}
       </div>
@@ -63,15 +64,38 @@ export default function Home() {
             <Link to='/ideas'>Explore all ideas &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 10 }).map((_, index) => (
+        {Array.from({ length: 11 }).map((_, index) => (
           <IdeaCard
             key={index}
             id='ideaId'
             title='A startup that creates an AI-powered generated personal trainer, delivering customized fitness recommendations. and tracking of progress using a mobile app to track workouts and progress as well as a webiste to manage the business.'
             viewsCount={123}
             likesCount={12}
-            timeAgo='12 hours ago'
+            postedAt='12 hours ago'
             claimed={index % 2 === 0}
+          />
+        ))}
+      </div>
+      <div className='grid grid-cols-4 gap-4'>
+        <div>
+          <h2 className='text-5xl font-bold leading-tight tracking-tighter'>Latest Jobs</h2>
+          <p className='text-xl font-light text-foreground'>Find your dream job.</p>
+          <Button variant='link' asChild className='text-lg p-0'>
+            <Link to='/jobs'>Explore all jobs &rarr;</Link>
+          </Button>
+        </div>
+        {Array.from({ length: 11 }).map((_, index) => (
+          <JobCard
+            key={index}
+            id={`jobId-${index}`}
+            company='Tesla'
+            companyLogoUrl='https://github.com/teslamotors.png'
+            companyHq='San Francisco, CA'
+            title='Senior Software Engineer'
+            postedAt='12 hours ago'
+            type='Full-time'
+            positionLocation='Remote'
+            salary='$100,000 - $120,000'
           />
         ))}
       </div>
