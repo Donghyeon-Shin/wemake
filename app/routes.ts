@@ -10,6 +10,7 @@ export default [
       route('/monthly/:year/:month', 'features/products/pages/monthly-leaderboards.tsx'),
       route('/weekly/:year/:month/:week', 'features/products/pages/weekly-leaderboards.tsx'),
       route('/daily/:year/:month/:day', 'features/products/pages/daily-leaderboards.tsx'),
+      route('/:period', 'features/products/pages/leaderboards-redirection.tsx'),
     ]),
     ...prefix('/categories', [
       index('features/products/pages/categories.tsx'),

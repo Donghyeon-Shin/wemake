@@ -36,7 +36,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         ]}
       </head>
       <body>
-        {children} {/* 각 페이지의 내용 */}
+        <main className='px-20'>
+          {children} {/* 각 페이지의 내용 */}
+        </main>
         <ScrollRestoration /> {/* 스크롤이 유지되는 기능 */}
         <Scripts /> {/* JavaScript로 변환 */}
       </body>
