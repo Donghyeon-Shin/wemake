@@ -30,7 +30,7 @@ export function ProductCard({
   className,
 }: ProductCardProps) {
   return (
-    <Link to={to}>
+    <Link to={to} className='block'>
       <Card
         className={`flex w-full flex-row items-center justify-between bg-transparent hover:bg-card/50 ${className ?? ''}`}
       >
