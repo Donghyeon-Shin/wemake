@@ -1,12 +1,22 @@
 import { DateTime } from 'luxon';
 import { data, isRouteErrorResponse, useParams, type MetaFunction } from 'react-router';
+import { z } from 'zod';
 import type { Route } from './+types/daily-leaderboards';
 
 export const meta: MetaFunction = () => [{ title: 'Daily Leaderboards | wemake' }];
 
+const paramsSchema = z.object({
+  year: z.coerce.number(),
+  month: z.coerce.number(),
+  day: z.coerce.number(),
+});
+
 export const loader = ({ params }: Route.LoaderArgs) => {
-  const { year, month, day } = params;
-  const date = DateTime.fromObject({ year: Number(year), month: Number(month), day: Number(day) });
+  const { success, data: parsedData } = paramsSchema.safeParse(params);
+  if (!success) {
+    throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
+  }
+  const date = DateTime.fromObject(parsedData).setZone('Asia/Seoul');
   if (!date.isValid) {
     throw data({ error_code: 'invalid_date', message: 'Invalid date' }, { status: 400 });
   }
@@ -14,7 +24,6 @@ export const loader = ({ params }: Route.LoaderArgs) => {
   if (date > today) {
     throw data({ error_code: 'future_date', message: 'Future date' }, { status: 400 });
   }
-  const products = await getProductsByDate(date);
   return { date };
 };
 
