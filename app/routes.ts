@@ -8,7 +8,7 @@ export default [
       index('features/products/pages/leaderboards.tsx'),
       route('/yearly/:year', 'features/products/pages/yearly-leaderboards.tsx'),
       route('/monthly/:year/:month', 'features/products/pages/monthly-leaderboards.tsx'),
-      route('/weekly/:year/:month/:week', 'features/products/pages/weekly-leaderboards.tsx'),
+      route('/weekly/:year/:week', 'features/products/pages/weekly-leaderboards.tsx'),
       route('/daily/:year/:month/:day', 'features/products/pages/daily-leaderboards.tsx'),
       route('/:period', 'features/products/pages/leaderboards-redirection.tsx'),
     ]),
