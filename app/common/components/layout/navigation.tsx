@@ -41,10 +41,10 @@ const menus: {
 }[] = [
   {
     name: 'Product',
-    to: '/product',
+    to: '/products',
     items: [
       {
-        name: 'Products',
+        name: 'Leaderboards',
         description: 'See the top performers in your community',
         to: '/products/leaderboards',
       },

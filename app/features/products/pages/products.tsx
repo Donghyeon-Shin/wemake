@@ -1,0 +1,12 @@
+import type { MetaFunction } from 'react-router';
+
+export const meta: MetaFunction = () => [{ title: 'Products | wemake' }];
+
+export default function ProductsPage() {
+  return (
+    <div className='p-8 space-y-4'>
+      <h1 className='text-3xl font-bold'>Products</h1>
+      <p className='text-muted-foreground'>Explore all products.</p>
+    </div>
+  );
+}
