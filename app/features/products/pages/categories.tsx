@@ -1,12 +1,21 @@
-import type { MetaFunction } from 'react-router';
+import { Hero } from '../../../common/components/layout/hero';
+import { CategoryCard } from '../components/category-card';
+import type { Route } from './+types/categories';
 
-export const meta: MetaFunction = () => [{ title: 'Product Categories | wemake' }];
+export const meta: Route.MetaFunction = () => [{ title: 'Product Categories | wemake' }];
 
 export default function CategoriesPage() {
   return (
-    <div className='p-8 space-y-4'>
-      <h1 className='text-3xl font-bold'>Categories</h1>
-      <p className='text-muted-foreground'>Browse products by category.</p>
+    <div className='space-y-10'>
+      <Hero title='Categories' subtitle='Browse products by category' />
+      {Array.from({ length: 10 }).map((_, index) => (
+        <CategoryCard
+          key={index}
+          id={`${index}`}
+          name={`Category Name ${index}`}
+          description={`Category Description ${index}`}
+        />
+      ))}
     </div>
   );
 }
