@@ -1,9 +1,9 @@
 import { Form, useParams } from 'react-router';
-import { Hero } from '../../../common/components/layout/hero';
-import ProductPagination from '../../../common/components/layout/product-pagination';
-import { Button } from '../../../common/components/ui/button';
-import { Input } from '../../../common/components/ui/input';
-import { ProductCard } from '../components/product-card';
+import { Hero } from '~/common/components/layout/hero';
+import ProductPagination from '~/common/components/layout/product-pagination';
+import { Button } from '~/common/components/ui/button';
+import { Input } from '~/common/components/ui/input';
+import { ProductCard } from '~/features/products/components/product-card';
 import type { Route } from './+types/category';
 
 export const meta: Route.MetaFunction = ({ params }) => [
