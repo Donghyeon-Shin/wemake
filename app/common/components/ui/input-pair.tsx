@@ -16,7 +16,7 @@ export function InputPair({
   TextareaHTMLAttributes<HTMLTextAreaElement>) {
   return (
     <div className='space-y-2 flex flex-col'>
-      <Label htmlFor={rest.id} className='flex flex-col items-start justify-start'>
+      <Label htmlFor={rest.id} className='flex flex-col items-start justify-start gap-1'>
         {label}
         <small className='text-muted-foreground'>{description}</small>
       </Label>
