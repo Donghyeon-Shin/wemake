@@ -23,8 +23,12 @@ export default [
       index('features/products/pages/product-redirection.tsx'),
       layout('features/products/layouts/product-layout.tsx', [
         route('/overview', 'features/products/pages/overview.tsx'),
-        route('/reviews', 'features/products/pages/reviews.tsx'),
+        index('features/products/pages/reviews.tsx'),
       ]),
     ]),
+  ]),
+  ...prefix('ideas', [
+    index('features/ideas/pages/ideas.tsx'),
+    route('/:ideaId', 'features/ideas/pages/idea.tsx'),
   ]),
 ] satisfies RouteConfig;

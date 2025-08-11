@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { Form } from 'react-router';
 import { Hero } from '~/common/components/layout/hero';
+import { Button } from '~/common/components/ui/button';
+import { Input } from '~/common/components/ui/input';
 import { InputPair } from '~/common/components/ui/input-pair';
+import { Label } from '~/common/components/ui/label';
 import { SelectPair } from '~/common/components/ui/select-pair';
-import { Button } from '../../../common/components/ui/button';
-import { Input } from '../../../common/components/ui/input';
-import { Label } from '../../../common/components/ui/label';
 import type { Route } from './+types/submit';
 
 export const meta: Route.MetaFunction = () => [

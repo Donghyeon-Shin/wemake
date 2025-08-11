@@ -5,7 +5,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/common/c
 import { cn } from '../../../lib/utils';
 
 export interface IdeaCardProps {
-  id: string;
+  id: number;
   title: string;
   viewsCount: number;
   likesCount: number;

@@ -1,5 +1,5 @@
-import { Hero } from '../../../common/components/layout/hero';
-import { CategoryCard } from '../components/category-card';
+import { Hero } from '~/common/components/layout/hero';
+import { CategoryCard } from '~/features/products/components/category-card';
 import type { Route } from './+types/categories';
 
 export const meta: Route.MetaFunction = () => [{ title: 'Product Categories | wemake' }];
