@@ -31,4 +31,9 @@ export default [
     index('features/ideas/pages/ideas.tsx'),
     route('/:ideaId', 'features/ideas/pages/idea.tsx'),
   ]),
+  ...prefix('/jobs', [
+    index('features/jobs/pages/jobs.tsx'),
+    route('/:jobId', 'features/jobs/pages/job.tsx'),
+    route('/submit', 'features/jobs/pages/submit.tsx'),
+  ]),
 ] satisfies RouteConfig;

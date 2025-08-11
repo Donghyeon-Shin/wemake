@@ -68,7 +68,7 @@ export default function Home() {
         {Array.from({ length: 11 }).map((_, index) => (
           <IdeaCard
             key={index}
-            id='ideaId'
+            id={`ideaId-${index}`}
             title='A startup that creates an AI-powered generated personal trainer, delivering customized fitness recommendations. and tracking of progress using a mobile app to track workouts and progress as well as a webiste to manage the business.'
             viewsCount={123}
             likesCount={12}
