@@ -14,7 +14,7 @@ const paramsSchema = z.object({
 
 export const meta: Route.MetaFunction = ({ params }) => {
   const date = DateTime.fromObject({
-    year: Number(params.year),
+    weekYear: Number(params.year),
     weekNumber: Number(params.week),
   })
     .setZone('Asia/Seoul')
