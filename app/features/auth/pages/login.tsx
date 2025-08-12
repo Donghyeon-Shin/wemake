@@ -1,6 +1,11 @@
 import { Form, Link } from 'react-router';
 import { Button } from '~/common/components/ui/button';
 import { InputPair } from '~/common/components/ui/input-pair';
+import type { Route } from './+types/login';
+
+export const meta: Route.MetaFunction = () => {
+  return [{ title: 'Login | wemake' }];
+};
 
 export default function Login() {
   return (
