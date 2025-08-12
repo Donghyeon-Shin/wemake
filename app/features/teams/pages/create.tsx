@@ -1,8 +1,8 @@
 import { Form } from 'react-router';
 import { Hero } from '~/common/components/layout/hero';
-import { Button } from '../../../common/components/ui/button';
-import { InputPair } from '../../../common/components/ui/input-pair';
-import { SelectPair } from '../../../common/components/ui/select-pair';
+import { Button } from '~/common/components/ui/button';
+import { InputPair } from '~/common/components/ui/input-pair';
+import { SelectPair } from '~/common/components/ui/select-pair';
 import type { Route } from './+types/create';
 
 export const meta: Route.MetaFunction = () => {

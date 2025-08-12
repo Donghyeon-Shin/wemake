@@ -1,5 +1,5 @@
 import { Hero } from '~/common/components/layout/hero';
-import { TeamCard } from '../components/team-card';
+import { TeamCard } from '~/features/teams/components/team-card';
 import type { Route } from './+types/teams';
 
 export const meta: Route.MetaFunction = () => {
