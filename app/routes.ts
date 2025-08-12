@@ -17,7 +17,7 @@ export default [
       route('/:categoryId', 'features/products/pages/category.tsx'),
     ]),
     route('/search', 'features/products/pages/search.tsx'),
-    route('/submit', 'features/products/pages/submit.tsx'),
+    route('/submit', 'features/products/pages/submit-product.tsx'),
     route('/promote', 'features/products/pages/promote.tsx'),
     ...prefix('/:productId', [
       index('features/products/pages/product-redirection.tsx'),
@@ -60,4 +60,19 @@ export default [
     route('/:teamId', 'features/teams/pages/team.tsx'),
     route('/create', 'features/teams/pages/create.tsx'),
   ]),
+  ...prefix('/my', [
+    ...prefix('/dashboard', [
+      index('features/users/pages/dashboard.tsx'),
+      route('/:ideas', 'features/users/pages/dashboard-ideas.tsx'),
+      route('/products/:productId', 'features/users/pages/dashboard-product.tsx'),
+    ]),
+    route('/profile', 'features/users/pages/my-profile.tsx'),
+    route('/settings', 'features/users/pages/settings.tsx'),
+    route('/notifications', 'features/users/pages/notifications.tsx'),
+    ...prefix('/messages', [
+      index('features/users/pages/messages.tsx'),
+      route('/:messageId', 'features/users/pages/message.tsx'),
+    ]),
+  ]),
+  route('/users/:username', 'features/users/pages/profile.tsx'),
 ] satisfies RouteConfig;

@@ -6,7 +6,7 @@ import { Input } from '~/common/components/ui/input';
 import { InputPair } from '~/common/components/ui/input-pair';
 import { Label } from '~/common/components/ui/label';
 import { SelectPair } from '~/common/components/ui/select-pair';
-import type { Route } from './+types/submit';
+import type { Route } from './+types/submit-product';
 
 export const meta: Route.MetaFunction = () => [
   { title: 'Submit Product | wemake' },
@@ -82,11 +82,9 @@ export default function SubmitProductPage({ actionData }: Route.ComponentProps) 
           </Button>
         </div>
         <div className='flex flex-col space-y-2'>
-          {icon && (
-            <div className='size-40 rounded-xl shadow-xl overflow-hidden'>
-              <img src={icon} alt='icon' className='object-cover size-full' />
-            </div>
-          )}
+          <div className='size-40 rounded-xl shadow-xl overflow-hidden'>
+            {icon ? <img src={icon} alt='icon' className='object-cover size-full' /> : null}
+          </div>
           <Label className='flex flex-col items-start justify-start gap-1'>
             Icon
             <small className='text-muted-foreground'>This is the icon of your product</small>
