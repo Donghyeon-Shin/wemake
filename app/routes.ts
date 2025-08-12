@@ -55,4 +55,9 @@ export default [
     route('/:postId', 'features/community/pages/post.tsx'),
     route('/submit', 'features/community/pages/submit.tsx'),
   ]),
+  ...prefix('/teams', [
+    index('features/teams/pages/teams.tsx'),
+    route('/:teamId', 'features/teams/pages/team.tsx'),
+    route('/create', 'features/teams/pages/create.tsx'),
+  ]),
 ] satisfies RouteConfig;
