@@ -50,4 +50,9 @@ export default [
       ]),
     ]),
   ]),
+  ...prefix('community', [
+    index('features/community/pages/community.tsx'),
+    route('/:postId', 'features/community/pages/post.tsx'),
+    route('/submit', 'features/community/pages/submit.tsx'),
+  ]),
 ] satisfies RouteConfig;
