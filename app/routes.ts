@@ -36,4 +36,18 @@ export default [
     route('/:jobId', 'features/jobs/pages/job.tsx'),
     route('/submit', 'features/jobs/pages/submit.tsx'),
   ]),
+  ...prefix('/auth', [
+    layout('features/auth/layouts/auth-layout.tsx', [
+      route('/login', 'features/auth/pages/login.tsx'),
+      route('/join', 'features/auth/pages/join.tsx'),
+      ...prefix('/otp', [
+        route('/start', 'features/auth/pages/otp-start.tsx'),
+        route('/complete', 'features/auth/pages/otp-complete.tsx'),
+      ]),
+      ...prefix('/social/:provider', [
+        route('/start', 'features/auth/pages/social-start.tsx'),
+        route('/complete', 'features/auth/pages/social-complete.tsx'),
+      ]),
+    ]),
+  ]),
 ] satisfies RouteConfig;
