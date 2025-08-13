@@ -35,6 +35,7 @@ export default function ProductLayout({ params: { productId } }: Route.Component
       </div>
       <div className='flex gap-2.5'>
         <NavLink
+          end
           className={({ isActive }) =>
             cn(
               isActive

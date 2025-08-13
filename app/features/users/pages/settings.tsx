@@ -44,6 +44,24 @@ export default function Settings() {
               ]}
             />
             <InputPair
+              label='Headline'
+              description='An introduction to your profile.'
+              id='headline'
+              name='headline'
+              placeholder='I am a software engineer...'
+              required
+              textarea
+            />
+            <InputPair
+              label='Bio'
+              description='Your public bio.'
+              id='bio'
+              name='bio'
+              placeholder='I am a software engineer...'
+              required
+              textarea
+            />
+            <InputPair
               label='Bio'
               description='Your public bio.'
               id='bio'
