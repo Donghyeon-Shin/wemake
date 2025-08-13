@@ -10,18 +10,19 @@ import { MessageCard } from '../components/MessageCard';
 
 export default function MessagesLayout() {
   return (
-    <SidebarProvider className='max-h-[calc(100vh-14rem)] overflow-hidden h-full min-h-full'>
+    <SidebarProvider className='max-h-[calc(100vh-14rem)] h-[calc(100vh-14rem)] overflow-hidden min-h-full'>
       <Sidebar className='pt-16' variant='floating'>
         <SidebarContent>
           <SidebarGroup>
             <SidebarMenu>
               {Array.from({ length: 20 }).map((_, index) => (
                 <MessageCard
+                  key={index}
                   id={index.toString()}
                   avatarSrc='https://github.com/shadcn.png'
                   avatarFallback='CN'
                   name='John Doe'
-                  email='john.doe@example.com'
+                  lastMessageCount={index}
                 />
               ))}
             </SidebarMenu>
