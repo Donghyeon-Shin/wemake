@@ -69,9 +69,11 @@ export default [
     route('/profile', 'features/users/pages/my-profile.tsx'),
     route('/settings', 'features/users/pages/settings.tsx'),
     route('/notifications', 'features/users/pages/notifications.tsx'),
-    ...prefix('/messages', [
-      index('features/users/pages/messages.tsx'),
-      route('/:messageId', 'features/users/pages/message.tsx'),
+    layout('features/users/layouts/messages-layout.tsx', [
+      ...prefix('/messages', [
+        index('features/users/pages/messages.tsx'),
+        route('/:messageId', 'features/users/pages/message.tsx'),
+      ]),
     ]),
   ]),
   layout('features/users/layouts/profile-layout.tsx', [
