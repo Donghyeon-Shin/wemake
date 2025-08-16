@@ -5,11 +5,13 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from 'react-router';
 
+import { Settings } from 'luxon';
 import type { Route } from './+types/root';
 import './app.css';
-import stylesheet from './app.css?url';
+import Navigation from './common/components/layout/navigation';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -22,20 +24,25 @@ export const links: Route.LinksFunction = () => [
     rel: 'stylesheet',
     href: 'https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap',
   },
-  { rel: 'stylesheet', href: stylesheet },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  Settings.defaultLocale = 'ko';
+  Settings.defaultZone = 'Asia/Seoul';
   return (
     <html lang='en' className='dark'>
       <head>
-        <meta charSet='utf-8' />
-        <meta name='viewport' content='width=device-width, initial-scale=1' />
-        <Meta /> {/* 각 페이지의 메타 데이터 */}
-        <Links /> {/* 각 페이지의 링크 */}
+        {[
+          <meta charSet='utf-8' key='charset' />,
+          <meta name='viewport' content='width=device-width, initial-scale=1' key='viewport' />,
+          <Meta key='meta' />,
+          <Links key='links' />,
+        ]}
       </head>
       <body>
-        {children} {/* 각 페이지의 내용 */}
+        <main>
+          {children} {/* 각 페이지의 내용 */}
+        </main>
         <ScrollRestoration /> {/* 스크롤이 유지되는 기능 */}
         <Scripts /> {/* JavaScript로 변환 */}
       </body>
@@ -45,7 +52,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 // 각 페이지의 내용
 export default function App() {
-  return <Outlet />;
+  const { pathname } = useLocation();
+  return (
+    <div className={`${pathname.includes('/auth/') ? '' : 'py-28 px-5 lg:px-20'}`}>
+      {pathname.includes('/auth') ? null : (
+        <Navigation isLoggedIn={true} hasNotifications={true} hasMessages={true} />
+      )}
+      <Outlet />
+    </div>
+  );
 }
 
 // 에러 발생 시 표시되는 화면
