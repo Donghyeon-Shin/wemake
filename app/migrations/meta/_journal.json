@@ -29,6 +29,13 @@
       "when": 1755332316806,
       "tag": "0003_massive_firebrand",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1755332927211,
+      "tag": "0004_harsh_whistler",
+      "breakpoints": true
     }
   ]
 }
