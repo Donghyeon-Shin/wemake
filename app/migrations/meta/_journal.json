@@ -36,6 +36,20 @@
       "when": 1755332927211,
       "tag": "0004_harsh_whistler",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1755428054573,
+      "tag": "0005_skinny_blacklash",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1755428117190,
+      "tag": "0006_needy_misty_knight",
+      "breakpoints": true
     }
   ]
 }
