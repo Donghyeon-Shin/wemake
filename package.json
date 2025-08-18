@@ -6,7 +6,10 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve ./build/server/index.js",
-    "typecheck": "react-router typegen && tsc"
+    "typecheck": "react-router typegen && tsc",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.10",
@@ -23,9 +26,11 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.44.4",
     "isbot": "^5.1.27",
     "lucide-react": "^0.537.0",
     "luxon": "^3.7.1",
+    "postgres": "^3.4.7",
     "react": "^19.1.0",
     "react-day-picker": "^9.8.1",
     "react-dom": "^19.1.0",
@@ -44,6 +49,7 @@
     "@types/react-dom": "^19.1.2",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
+    "drizzle-kit": "^0.31.4",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^10.1.8",

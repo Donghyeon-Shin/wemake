@@ -3,6 +3,7 @@ import { Hero } from '~/common/components/layout/hero';
 import { Button } from '~/common/components/ui/button';
 import { InputPair } from '~/common/components/ui/input-pair';
 import { SelectPair } from '~/common/components/ui/select-pair';
+import { PRODUCT_STAGE } from '../constants';
 import type { Route } from './+types/create';
 
 export const meta: Route.MetaFunction = () => {
@@ -31,12 +32,7 @@ export default function Submit() {
             placeholder='Select the stage of your product'
             description='(required)'
             required
-            options={[
-              { label: 'Idea', value: 'idea' },
-              { label: 'Prototype', value: 'prototype' },
-              { label: 'MVP', value: 'mvp' },
-              { label: 'Launched', value: 'launched' },
-            ]}
+            options={PRODUCT_STAGE}
           />
           <InputPair
             label='What is the size of your team?'
