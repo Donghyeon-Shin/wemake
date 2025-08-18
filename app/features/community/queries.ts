@@ -44,23 +44,7 @@ export const getTopics = async () => {
 
 export const getPosts = async () => {
   // supabase는 기본적으로 left join을 사용
-  const { data, error } = await client.from('posts').select(`
-    post_id,
-    title,
-    created_at,
-    topic:topics!inner(
-      name
-    ),
-    author:profiles!posts_profile_id_profiles_profile_id_fk!inner(
-      name,
-      avatar,
-      username
-    ),
-    upvotes:post_upvotes(
-      count
-    )
-  `);
-  console.log(error);
+  const { data, error } = await client.from('community_post_list_view').select('*');
   if (error) throw new Error(error.message);
   return data;
 };
