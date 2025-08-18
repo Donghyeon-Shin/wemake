@@ -11,13 +11,20 @@ import {
 import { Input } from '~/common/components/ui/input';
 import { PostCard } from '../components/post-card';
 import { PERIOD_OPTIONS, SORT_OPTIONS } from '../constants';
+import { getPosts, getTopics } from '../queries';
 import type { Route } from './+types/community';
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Community | wemake' }];
 };
 
-export default function Community() {
+export const loader = async () => {
+  const topics = await getTopics();
+  const posts = await getPosts();
+  return { topics, posts };
+};
+
+export default function Community({ loaderData }: Route.ComponentProps) {
   const [searchParams, setSearchParams] = useSearchParams();
   const sorting = searchParams.get('sorting') || 'newest';
   const period = searchParams.get('period') || 'all';
@@ -86,15 +93,16 @@ export default function Community() {
             </Button>
           </div>
           <div className='space-y-5'>
-            {Array.from({ length: 11 }).map((_, index) => (
+            {loaderData.posts.map((post) => (
               <PostCard
-                key={index}
-                id={`postId-${index}`}
-                title='What is the best productivity tool?'
-                author='Donghyeon'
-                authorAvatarUrl='https://github.com/apple.png'
-                category='Productivity'
-                postedAt='12 hours ago'
+                key={post.id}
+                id={post.id}
+                title={post.title}
+                author={post.author}
+                authorAvatarUrl={post.authorAvatarUrl}
+                category={post.topic}
+                postedAt={post.createdAt}
+                votesCount={post.votesCount}
                 expanded
               />
             ))}
@@ -103,16 +111,10 @@ export default function Community() {
         <aside className='flex flex-col col-span-2 space-y-5'>
           <span className='text-sm font-bold text-muted-foreground uppercase'>Topics</span>
           <div className='flex flex-col gap-4 items-start'>
-            {[
-              'AI Tools',
-              'Design Tools',
-              'Dev Tools',
-              'Note Taking Apps',
-              'Productivity Tools',
-            ].map((category) => (
-              <Button asChild variant='link' key={category} className='pl-0'>
-                <Link className='font-semibold' to={`/community?topic=${category}`}>
-                  {category}
+            {loaderData.topics.map((topic) => (
+              <Button asChild variant='link' key={topic.slug} className='pl-0'>
+                <Link className='font-semibold' to={`/community?topic=${topic.slug}`}>
+                  {topic.name}
                 </Link>
               </Button>
             ))}
