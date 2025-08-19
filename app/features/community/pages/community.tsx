@@ -1,5 +1,6 @@
 import { ChevronDownIcon } from 'lucide-react';
-import { Form, Link, useSearchParams } from 'react-router';
+import { Suspense } from 'react';
+import { Await, Form, Link, useSearchParams } from 'react-router';
 import { Hero } from '~/common/components/layout/hero';
 import { Button } from '~/common/components/ui/button';
 import {
@@ -19,8 +20,9 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export const loader = async () => {
-  const topics = await getTopics();
-  const posts = await getPosts();
+  // const [topics, posts] = await Promise.all([getTopics(), getPosts()]); // 최적화 동시 처리
+  const topics = getTopics(); // await 처리하지 않아서 바로 return 됨 -> Loader에서 바로 넘어감
+  const posts = getPosts();
   return { topics, posts };
 };
 
@@ -92,33 +94,46 @@ export default function Community({ loaderData }: Route.ComponentProps) {
               <Link to='/community/submit'>Create Discussion</Link>
             </Button>
           </div>
-          <div className='space-y-5'>
-            {loaderData.posts.map((post) => (
-              <PostCard
-                key={post.post_id}
-                id={post.post_id}
-                title={post.title}
-                author={post.author}
-                authorAvatarUrl={post.author_avatar}
-                category={post.topic}
-                postedAt={post.created_at}
-                votesCount={post.upvotes}
-                expanded
-              />
-            ))}
-          </div>
+          {/* 데이터 로딩 시 로딩 표시 */}
+          <Suspense fallback={<div>Loading...</div>}>
+            <Await resolve={loaderData.posts}>
+              {(data) => (
+                <div className='space-y-5'>
+                  {data.map((post) => (
+                    <PostCard
+                      key={post.post_id}
+                      id={post.post_id}
+                      title={post.title}
+                      author={post.author}
+                      authorAvatarUrl={post.author_avatar}
+                      category={post.topic}
+                      postedAt={post.created_at}
+                      votesCount={post.upvotes}
+                      expanded
+                    />
+                  ))}
+                </div>
+              )}
+            </Await>
+          </Suspense>
         </div>
         <aside className='flex flex-col col-span-2 space-y-5'>
           <span className='text-sm font-bold text-muted-foreground uppercase'>Topics</span>
-          <div className='flex flex-col gap-4 items-start'>
-            {loaderData.topics.map((topic) => (
-              <Button asChild variant='link' key={topic.slug} className='pl-0'>
-                <Link className='font-semibold' to={`/community?topic=${topic.slug}`}>
-                  {topic.name}
-                </Link>
-              </Button>
-            ))}
-          </div>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Await resolve={loaderData.topics}>
+              {(data) => (
+                <div className='flex flex-col gap-4 items-start'>
+                  {data.map((topic) => (
+                    <Button asChild variant='link' key={topic.slug} className='pl-0'>
+                      <Link className='font-semibold' to={`/community?topic=${topic.slug}`}>
+                        {topic.name}
+                      </Link>
+                    </Button>
+                  ))}
+                </div>
+              )}
+            </Await>
+          </Suspense>
         </aside>
       </div>
     </div>
