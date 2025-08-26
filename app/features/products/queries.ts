@@ -1,14 +1,17 @@
 import type { DateTime } from 'luxon';
 import client from '~/supa-client';
+import { PAGE_SIZE } from './constants';
 
 export const getProductsByDateRange = async ({
   startDate,
   endDate,
-  limit = 10,
+  limit,
+  page = 1,
 }: {
   startDate: DateTime;
   endDate: DateTime;
-  limit?: number;
+  page?: number;
+  limit: number;
 }) => {
   const { data, error } = await client
     .from('products')
@@ -18,9 +21,27 @@ export const getProductsByDateRange = async ({
     .lte('created_at', endDate.toISO())
     .gte('created_at', startDate.toISO())
     .order('stats->>upvotes', { ascending: false })
-    .limit(limit);
-
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
   if (error) throw error;
 
   return data;
+};
+
+export const getProductPagesByDateRange = async ({
+  startDate,
+  endDate,
+}: {
+  startDate: DateTime;
+  endDate: DateTime;
+}) => {
+  const { count, error } = await client
+    .from('products')
+    .select('product_id', { count: 'exact', head: true }) // head: true 는 카운트 값만 반환
+    .lte('created_at', endDate.toISO())
+    .gte('created_at', startDate.toISO());
+
+  if (error) throw error;
+  if (!count) return 1;
+
+  return Math.ceil(count / PAGE_SIZE);
 };
