@@ -57,6 +57,13 @@
       "when": 1755429072523,
       "tag": "0007_quick_hairball",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1755589937442,
+      "tag": "0008_red_albert_cleary",
+      "breakpoints": true
     }
   ]
 }

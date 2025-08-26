@@ -1,4 +1,5 @@
 import { ChevronUpIcon, DotIcon } from 'lucide-react';
+import { DateTime } from 'luxon';
 import { Link } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar';
 import { Button } from '~/common/components/ui/button';
@@ -6,10 +7,10 @@ import { Card, CardFooter, CardHeader, CardTitle } from '~/common/components/ui/
 import { cn } from '../../../lib/utils';
 
 export interface PostCardProps {
-  id: string;
+  id: number;
   title: string;
   author: string;
-  authorAvatarUrl: string;
+  authorAvatarUrl: string | null;
   category: string;
   postedAt: string;
   className?: string;
@@ -37,9 +38,9 @@ export function PostCard({
           className,
         )}
       >
-        <CardHeader className='flex flex-row gap-2 items-center'>
+        <CardHeader className='flex flex-row gap-2 items-center w-full'>
           <Avatar className='size-14'>
-            <AvatarImage src={authorAvatarUrl} />
+            {authorAvatarUrl && <AvatarImage src={authorAvatarUrl} />}
             <AvatarFallback>{author.charAt(0)}</AvatarFallback>
           </Avatar>
           <div className='space-y-2'>
@@ -48,23 +49,24 @@ export function PostCard({
               <span>{author}</span>
               <span>{category}</span>
               <DotIcon className='size-4' />
-              <span className='w-[100px]'>{postedAt}</span>
+              <span>{DateTime.fromISO(postedAt).toRelative()}</span>
             </div>
           </div>
         </CardHeader>
 
-        <CardFooter className='flex justify-end'>
-          {!expanded ? (
-            <div className='text-sm text-muted-foreground hover:text-foreground transition-colors'>
-              Reply &rarr;
-            </div>
-          ) : (
-            <Button variant='outline' className='flex flex-col h-14 pt-0 pb-0'>
+        {!expanded && (
+          <CardFooter className='flex justify-end'>
+            <Button variant='link'>Reply &rarr;</Button>
+          </CardFooter>
+        )}
+        {expanded && (
+          <CardFooter className='flex justify-end  pb-0'>
+            <Button variant='outline' className='flex flex-col h-14'>
               <ChevronUpIcon className='size-4 shrink-0' />
               <span>{votesCount}</span>
             </Button>
-          )}
-        </CardFooter>
+          </CardFooter>
+        )}
       </Card>
     </Link>
   );

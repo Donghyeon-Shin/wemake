@@ -171,7 +171,12 @@ export default function Navigation({
               <NavigationMenuItem key={menu.name}>
                 {menu.items ? (
                   <>
-                    <Link to={menu.to}>
+                    {/*
+                    prefetch='intent' 네비게이션 메뉴 트리거 Hover 시 미리 로드(Hover 벗어날 때 취소됨)
+                    prefetch='viewport' 네비게이션 메뉴 트리거가 viewport에 있을 때 미리 로드
+                    prefetch='render' 네비게이션 메뉴 트리거 랜더 시 미리 로드
+                    */}
+                    <Link to={menu.to} prefetch='intent'>
                       <NavigationMenuTrigger>{menu.name}</NavigationMenuTrigger>
                     </Link>
                     <NavigationMenuContent>
