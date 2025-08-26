@@ -13,9 +13,9 @@ type ProductCardProps = {
   to: string;
   title: string;
   description: string;
-  commentsCount: number;
-  viewsCount: number;
-  votesCount: number;
+  reviewsCount: string;
+  viewsCount: string;
+  votesCount: string;
   className?: string;
 };
 
@@ -23,7 +23,7 @@ export function ProductCard({
   to,
   title,
   description,
-  commentsCount,
+  reviewsCount,
   viewsCount,
   votesCount,
   className,
@@ -41,7 +41,7 @@ export function ProductCard({
           <div className='flex items-center gap-4 mt-2'>
             <div className='flex items-center gap-px text-xs text-muted-foreground'>
               <MessageCircleIcon className='size-4' />
-              <span>{commentsCount}</span>
+              <span>{reviewsCount}</span>
             </div>
             <div className='flex items-center gap-px text-xs text-muted-foreground'>
               <EyeIcon className='size-4' />

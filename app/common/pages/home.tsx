@@ -1,16 +1,28 @@
+import { DateTime } from 'luxon';
 import { Link, type MetaFunction } from 'react-router';
 import { PostCard } from '~/features/community/components/post-card';
 import { IdeaCard } from '~/features/ideas/components/idea-card';
 import { JobCard } from '~/features/jobs/components/job-card';
 import { ProductCard } from '~/features/products/components/product-card';
+import { getProductsByDateRange } from '~/features/products/queries';
 import { TeamCard } from '~/features/teams/components/team-card';
 import { Button } from '../components/ui/button';
+import type { Route } from './+types/home';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'Home | wemake' }, { name: 'description', content: 'Welcome to wemake' }];
 };
 
-export default function Home() {
+export async function loader() {
+  const products = await getProductsByDateRange({
+    startDate: DateTime.now().startOf('day'),
+    endDate: DateTime.now().endOf('day'),
+    limit: 7,
+  });
+  return { products };
+}
+
+export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <div className='px-20 space-y-40'>
       <div className='grid grid-cols-3 gap-4'>
@@ -23,15 +35,15 @@ export default function Home() {
             <Link to='/products/leaderboard'>Explore all products &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.products.map((product) => (
           <ProductCard
-            key={index}
-            to={`/products/${index}`}
-            title={'Product Name'}
-            description={'Product Description'}
-            commentsCount={12}
-            viewsCount={12}
-            votesCount={120}
+            key={product.product_id}
+            to={`/products/${product.product_id}`}
+            title={product.name}
+            description={product.description}
+            reviewsCount={product.reviews}
+            viewsCount={product.views}
+            votesCount={product.upvotes}
           />
         ))}
       </div>
@@ -48,7 +60,7 @@ export default function Home() {
         {Array.from({ length: 11 }).map((_, index) => (
           <PostCard
             key={index}
-            id={`postId-${index}`}
+            id={index}
             title='What is the best productivity tool?'
             author='Donghyeon'
             authorAvatarUrl='https://github.com/apple.png'
