@@ -3,7 +3,8 @@
 // import { profiles } from '../users/schema';
 // import { post_upvotes, posts, topics } from './schema';
 
-import client from '../../supa-client';
+import { DateTime } from 'luxon';
+import client from '~/supa-client';
 
 // export const getTopics = async () => {
 //   const allTopcis = await db
@@ -42,9 +43,54 @@ export const getTopics = async () => {
   return data;
 };
 
-export const getPosts = async () => {
+export const getPosts = async ({
+  limit,
+  sorting,
+  period = 'all',
+  keyword,
+  topic,
+}: {
+  limit: number;
+  sorting: 'newest' | 'popular';
+  period?: 'all' | 'day' | 'week' | 'month' | 'year';
+  keyword?: string;
+  topic?: string;
+}) => {
   // supabase는 기본적으로 left join을 사용
-  const { data, error } = await client.from('community_post_list_view').select('*');
+
+  // 기본 쿼리
+  const baseQuery = client.from('community_post_list_view').select('*').limit(limit);
+
+  // 정렬 조건
+  if (sorting === 'newest') {
+    baseQuery.order('created_at', { ascending: false });
+  } else {
+    if (period === 'all') {
+      baseQuery.order('upvotes', { ascending: false });
+    } else {
+      const today = DateTime.now();
+      if (period === 'day') {
+        baseQuery.gte('created_at', today.startOf('day').toISO());
+      } else if (period === 'week') {
+        baseQuery.gte('created_at', today.startOf('week').toISO());
+      } else if (period === 'month') {
+        baseQuery.gte('created_at', today.startOf('month').toISO());
+      } else if (period === 'year') {
+        baseQuery.gte('created_at', today.startOf('year').toISO());
+      }
+      baseQuery.order('upvotes', { ascending: false });
+    }
+  }
+
+  if (keyword) {
+    baseQuery.ilike('title', `%${keyword}%`); // ilike : sql injection 자동 방지
+  }
+
+  if (topic) {
+    baseQuery.eq('topic_slug', topic);
+  }
+
+  const { data, error } = await baseQuery;
   if (error) throw new Error(error.message);
   return data;
 };
