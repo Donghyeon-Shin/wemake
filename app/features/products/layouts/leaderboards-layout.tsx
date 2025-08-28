@@ -8,7 +8,7 @@ const searchParamsSchema = z.object({
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const url = new URL(request.url);
-  const { success: searchParamsSuccess, data: searchParamsData } = searchParamsSchema.safeParse(
+  const { success: searchParamsSuccess } = searchParamsSchema.safeParse(
     Object.fromEntries(url.searchParams),
   );
   if (!searchParamsSuccess) {

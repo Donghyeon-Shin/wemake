@@ -18,19 +18,20 @@ export const meta: MetaFunction = () => {
 };
 
 export const loader = async () => {
-  const products = await getProductsByDateRange({
-    startDate: DateTime.now().startOf('day'),
-    endDate: DateTime.now().endOf('day'),
-    limit: 7,
-  });
-
-  const posts = await getPosts({
-    limit: 7,
-    sorting: 'newest',
-  });
-  const gptIdeas = await getGptIdeas({ limit: 7 });
-  const jobs = await getJobs({ limit: 11 });
-  const teams = await getTeams({ limit: 7 });
+  const [products, posts, gptIdeas, jobs, teams] = await Promise.all([
+    getProductsByDateRange({
+      startDate: DateTime.now().startOf('day'),
+      endDate: DateTime.now().endOf('day'),
+      limit: 7,
+    }),
+    getPosts({
+      limit: 7,
+      sorting: 'newest',
+    }),
+    getGptIdeas({ limit: 7 }),
+    getJobs({ limit: 11 }),
+    getTeams({ limit: 7 }),
+  ]);
 
   return { products, posts, gptIdeas, jobs, teams };
 };

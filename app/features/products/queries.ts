@@ -45,3 +45,48 @@ export const getProductPagesByDateRange = async ({
 
   return Math.ceil(count / PAGE_SIZE);
 };
+
+export const getCategories = async () => {
+  const { data, error } = await client.from('categories').select('category_id, name, description');
+  if (error) throw error;
+  return data;
+};
+
+export const getCategory = async ({ categoryId }: { categoryId: number }) => {
+  const { data, error } = await client
+    .from('categories')
+    .select('category_id, name, description')
+    .eq('category_id', categoryId)
+    .single();
+  if (error) throw error;
+  return data;
+};
+
+export const getProductsByCategory = async ({
+  categoryId,
+  page,
+}: {
+  categoryId: number;
+  page: number;
+}) => {
+  const { data, error } = await client
+    .from('products')
+    .select(
+      'product_id, name, description, upvotes: stats->>upvotes, views: stats->>views, reviews: stats->>reviews',
+    )
+    .eq('category_id', categoryId)
+    .order('stats->>upvotes', { ascending: false })
+    .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
+  if (error) throw error;
+  return data;
+};
+
+export const getCategoryPages = async ({ categoryId }: { categoryId: number }) => {
+  const { count, error } = await client
+    .from('products')
+    .select('product_id', { count: 'exact', head: true })
+    .eq('category_id', categoryId);
+  if (error) throw error;
+  if (!count) return 1;
+  return Math.ceil(count / PAGE_SIZE);
+};
