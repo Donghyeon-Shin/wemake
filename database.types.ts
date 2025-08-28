@@ -341,6 +341,13 @@ export type Database = {
             referencedColumns: ["product_id"]
           },
           {
+            foreignKeyName: "notifications_product_id_products_product_id_fk"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_overview_view"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "notifications_source_id_profiles_profile_id_fk"
             columns: ["source_id"]
             isOneToOne: false
@@ -525,6 +532,13 @@ export type Database = {
             referencedColumns: ["product_id"]
           },
           {
+            foreignKeyName: "product_upvotes_product_id_products_product_id_fk"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_overview_view"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "product_upvotes_profile_id_profiles_profile_id_fk"
             columns: ["profile_id"]
             isOneToOne: false
@@ -672,6 +686,13 @@ export type Database = {
             referencedColumns: ["product_id"]
           },
           {
+            foreignKeyName: "reviews_product_id_products_product_id_fk"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products_overview_view"
+            referencedColumns: ["product_id"]
+          },
+          {
             foreignKeyName: "reviews_profile_id_profiles_profile_id_fk"
             columns: ["profile_id"]
             isOneToOne: false
@@ -772,6 +793,22 @@ export type Database = {
           is_claimed: boolean | null
           likes: number | null
           views: number | null
+        }
+        Relationships: []
+      }
+      products_overview_view: {
+        Row: {
+          average_rating: number | null
+          description: string | null
+          how_it_works: string | null
+          icon: string | null
+          name: string | null
+          product_id: number | null
+          reviews: string | null
+          tagline: string | null
+          upvotes: string | null
+          url: string | null
+          views: string | null
         }
         Relationships: []
       }
