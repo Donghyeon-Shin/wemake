@@ -25,7 +25,6 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
   }
   const productId = parsedData.productId;
   const product = await getProductById({ productId });
-  console.log(product);
   return { product };
 };
 
@@ -99,6 +98,7 @@ export default function ProductLayout({ loaderData }: Route.ComponentProps) {
             product_id: loaderData.product.product_id,
             description: loaderData.product.description,
             how_it_works: loaderData.product.how_it_works,
+            review_count: loaderData.product.reviews,
           }}
         />
       </div>

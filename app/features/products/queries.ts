@@ -125,3 +125,12 @@ export const getProductById = async ({ productId }: { productId: number }) => {
   if (error) throw error;
   return data;
 };
+
+export const getReviewsByProductId = async ({ productId }: { productId: number }) => {
+  const { data, error } = await client
+    .from('reviews')
+    .select('review_id, rating, review, created_at, user:profiles!inner(name, username, avatar)')
+    .eq('product_id', productId);
+  if (error) throw error;
+  return data;
+};

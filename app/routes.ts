@@ -25,7 +25,7 @@ export default [
       index('features/products/pages/product-redirection.tsx'),
       layout('features/products/layouts/product-layout.tsx', [
         route('/overview', 'features/products/pages/overview.tsx'),
-        index('features/products/pages/reviews.tsx'),
+        route('/reviews', 'features/products/pages/reviews.tsx'),
       ]),
     ]),
   ]),

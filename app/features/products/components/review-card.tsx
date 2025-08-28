@@ -1,11 +1,12 @@
 import { AvatarFallback } from '@radix-ui/react-avatar';
 import { StarIcon } from 'lucide-react';
+import { DateTime } from 'luxon';
 import { Avatar, AvatarImage } from '~/common/components/ui/avatar';
 
 interface ReviewCardProps {
   name: string;
   username: string;
-  avatar?: string;
+  avatar?: string | null;
   rating: number;
   content: string;
   postedAt: string;
@@ -16,7 +17,7 @@ export function ReviewCard({ name, username, avatar, rating, content, postedAt }
     <div className='space-y-5'>
       <div className='flex items-center gap-2'>
         <Avatar>
-          <AvatarImage src={avatar} />
+          {avatar && <AvatarImage src={avatar} />}
           <AvatarFallback>{name.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
         <div>
@@ -34,7 +35,9 @@ export function ReviewCard({ name, username, avatar, rating, content, postedAt }
         ))}
       </div>
       <p className='text-muted-foreground'>{content}</p>
-      <span className='text-sm text-muted-foreground'>{postedAt}</span>
+      <span className='text-sm text-muted-foreground'>
+        {DateTime.fromISO(postedAt).toRelative()}
+      </span>
     </div>
   );
 }
