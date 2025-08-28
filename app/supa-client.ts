@@ -20,6 +20,9 @@ type Database = MergeDeep<
         products_overview_view: {
           Row: SetNonNullable<SupabaseDatabase['public']['Views']['products_overview_view']['Row']>;
         };
+        community_post_detail: {
+          Row: SetNonNullable<SupabaseDatabase['public']['Views']['community_post_detail']['Row']>;
+        };
       };
     };
   }

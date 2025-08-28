@@ -1,13 +1,30 @@
 import { DotIcon } from 'lucide-react';
+import { DateTime } from 'luxon';
+import { data } from 'react-router';
+import { z } from 'zod';
 import { Badge } from '~/common/components/ui/badge';
 import { Button } from '~/common/components/ui/button';
+import { getJobById } from '../queries';
 import type { Route } from './+types/job';
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Job Details | wemake' }, { name: 'description', content: 'Job Details' }];
 };
 
-export default function Job() {
+const paramsSchema = z.object({
+  jobId: z.coerce.number(),
+});
+
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const { success, data: parsedData } = paramsSchema.safeParse(params);
+  if (!success) {
+    throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
+  }
+  const job = await getJobById({ jobId: parsedData.jobId });
+  return { job };
+};
+
+export default function Job({ loaderData }: Route.ComponentProps) {
   return (
     <div>
       <div className='bg-gradient-to-tr from-primary/80 to-primary/10 h-60 wull rounded-lg'></div>
@@ -15,34 +32,23 @@ export default function Job() {
         <div className='col-span-4 space-y-10'>
           <div>
             <div className='size-40 bg-white rounded-full relative left-10 overflow-hidden object-cover'>
-              <img src='https://github.com/facebook.png' className='size-full' />
+              <img src={loaderData.job.company_logo_url} className='size-full' />
             </div>
-            <h1 className='text-4xl font-bold'>Software Engineer</h1>
-            <h4 className='text-lg text-muted-foreground'>Meta Inc.</h4>
+            <h1 className='text-4xl font-bold'>{loaderData.job.position}</h1>
+            <h4 className='text-lg text-muted-foreground'>{loaderData.job.company_name}</h4>
           </div>
-          <div className='flex gap-2'>
-            <Badge variant='secondary'>Full-time</Badge>
-            <Badge variant='secondary'>Remote</Badge>
+          <div className='flex gap-2 capitalize'>
+            <Badge variant='secondary'>{loaderData.job.job_type}</Badge>
+            <Badge variant='secondary'>{loaderData.job.location_type}</Badge>
           </div>
           <div className='space-y-2.5'>
             <h4 className='text-2xl font-bold'>Overview</h4>
-            <p className='text-lg text-muted-foreground'>
-              We are looking for a Software Engineer with 3+ years of experience in React, Node.js,
-              and MongoDB. The ideal candidate will have a strong understanding of modern web
-              development and be able to work independently and as part of a team. We are looking
-              for a Software Engineer with 3+ years of experience in React, Node.js, and MongoDB.
-              The ideal candidate will have a strong understanding of modern web development and be
-              able to work independently and as part of a team.
-            </p>
+            <p className='text-lg text-muted-foreground'>{loaderData.job.overview}</p>
           </div>
           <div className='space-y-2.5'>
             <h4 className='text-2xl font-bold'>Responsibilities</h4>
             <ul className='text-lg list-disc list-inside'>
-              {[
-                'Develop and maintain web applications using React, Node.js, and MongoDB.',
-                'Implement new features and improve existing code.',
-                'Collaborate with other developers to ensure timely delivery of projects.',
-              ].map((item) => (
+              {loaderData.job.responsibilities.split(',').map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -50,11 +56,7 @@ export default function Job() {
           <div className='space-y-2.5'>
             <h4 className='text-2xl font-bold'>Qualifications</h4>
             <ul className='text-lg list-disc list-inside'>
-              {[
-                '3+ years of experience in React, Node.js, and MongoDB.',
-                'Strong understanding of modern web development.',
-                'Ability to work independently and as part of a team.',
-              ].map((item) => (
+              {loaderData.job.qualifications.split(',').map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -62,17 +64,7 @@ export default function Job() {
           <div className='space-y-2.5'>
             <h4 className='text-2xl font-bold'>Benefits</h4>
             <ul className='text-lg list-disc list-inside'>
-              {[
-                'Flexible working hours',
-                'Remote work',
-                'Health insurance',
-                'Dental insurance',
-                'Vision insurance',
-                '401(k) plan',
-                'Paid time off',
-                'Paid holidays',
-                'Paid sick days',
-              ].map((item) => (
+              {loaderData.job.benefits.split(',').map((item) => (
                 <li key={item}>{item}</li>
               ))}
             </ul>
@@ -80,29 +72,35 @@ export default function Job() {
           <div className='space-y-2.5'>
             <h4 className='text-2xl font-bold'>Skills</h4>
             <ul className='text-lg list-disc list-inside'>
-              {['React', 'Node.js', 'MongoDB', 'TypeScript', 'JavaScript', 'HTML', 'CSS'].map(
-                (item) => (
-                  <li key={item}>{item}</li>
-                ),
-              )}
+              {loaderData.job.skills.split(',').map((item) => (
+                <li key={item}>{item}</li>
+              ))}
             </ul>
           </div>
         </div>
         <div className='col-span-2 sticky top-20 p-6 border rounded-lg mt-32 space-y-5'>
           <div className='flex flex-col'>
             <span className='text-xl font-medium'>Avg. Salary</span>
-            <span className='text-sm text-muted-foreground'>$100,000 - $120,000</span>
+            <span className='text-sm text-muted-foreground capitalize'>
+              {loaderData.job.salary_range}
+            </span>
           </div>
           <div className='flex flex-col'>
             <span className='text-xl font-medium'>Location</span>
-            <span className='text-sm text-muted-foreground'>Remote</span>
+            <span className='text-sm text-muted-foreground capitalize'>
+              {loaderData.job.location_type}
+            </span>
           </div>
           <div className='flex flex-col'>
             <span className='text-xl font-medium'>Type</span>
-            <span className='text-sm text-muted-foreground'>Full-time</span>
+            <span className='text-sm text-muted-foreground capitalize'>
+              {loaderData.job.job_type}
+            </span>
           </div>
           <div className='flex'>
-            <span className='text-sm text-muted-foreground'>Posted 2 days ago</span>
+            <span className='text-sm text-muted-foreground'>
+              Posted {DateTime.fromISO(loaderData.job.created_at).toRelative()}
+            </span>
             <DotIcon className='size-4' />
             <span className='text-sm text-muted-foreground'>395 views</span>
           </div>
