@@ -1,14 +1,15 @@
 import { DateTime } from 'luxon';
 import { Link, type MetaFunction } from 'react-router';
 import { PostCard } from '~/features/community/components/post-card';
+import { getPosts } from '~/features/community/queries';
 import { IdeaCard } from '~/features/ideas/components/idea-card';
 import { getGptIdeas } from '~/features/ideas/queries';
 import { JobCard } from '~/features/jobs/components/job-card';
+import { getJobs } from '~/features/jobs/queries';
 import { ProductCard } from '~/features/products/components/product-card';
 import { getProductsByDateRange } from '~/features/products/queries';
 import { TeamCard } from '~/features/teams/components/team-card';
-import { getPosts } from '../../features/community/queries';
-import { getJobs } from '../../features/jobs/queries';
+import { getTeams } from '~/features/teams/queries';
 import { Button } from '../components/ui/button';
 import type { Route } from './+types/home';
 
@@ -27,12 +28,11 @@ export const loader = async () => {
     limit: 7,
     sorting: 'newest',
   });
-
   const gptIdeas = await getGptIdeas({ limit: 7 });
-
   const jobs = await getJobs({ limit: 11 });
+  const teams = await getTeams({ limit: 7 });
 
-  return { products, posts, gptIdeas, jobs };
+  return { products, posts, gptIdeas, jobs, teams };
 };
 
 export default function Home({ loaderData }: Route.ComponentProps) {
@@ -136,14 +136,14 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <Link to='/teams'>Explore all teams &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 7 }).map((_, index) => (
+        {loaderData.teams.map((team) => (
           <TeamCard
-            key={index}
-            id={`teamId-${index}`}
-            leaderName='donghyeon'
-            leaderAvatarUrl='https://github.com/donghyeon.png'
-            positions={['React Developer', 'Backend Developer', 'Product Manager']}
-            projectDescription='a new social media platform'
+            key={team.team_id}
+            id={team.team_id}
+            leaderName={team.team_leader.username}
+            leaderAvatarUrl={team.team_leader.avatar}
+            positions={team.roles.split(', ')}
+            projectDescription={team.product_description}
           />
         ))}
       </div>
