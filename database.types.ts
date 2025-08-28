@@ -93,6 +93,13 @@ export type Database = {
             referencedColumns: ["gpt_idea_id"]
           },
           {
+            foreignKeyName: "gpt_idea_likes_gpt_idea_id_gpt_ideas_gpt_idea_id_fk"
+            columns: ["gpt_idea_id"]
+            isOneToOne: false
+            referencedRelation: "gpt_ideas_view"
+            referencedColumns: ["gpt_idea_id"]
+          },
+          {
             foreignKeyName: "gpt_idea_likes_profile_id_profiles_profile_id_fk"
             columns: ["profile_id"]
             isOneToOne: false
@@ -743,6 +750,17 @@ export type Database = {
           topic: string | null
           topic_slug: string | null
           upvotes: number | null
+        }
+        Relationships: []
+      }
+      gpt_ideas_view: {
+        Row: {
+          created_at: string | null
+          gpt_idea_id: number | null
+          idea: string | null
+          is_claimed: boolean | null
+          likes: number | null
+          views: number | null
         }
         Relationships: []
       }

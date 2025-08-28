@@ -1,33 +1,43 @@
 import { DotIcon, EyeIcon, HeartIcon } from 'lucide-react';
+import { DateTime } from 'luxon';
 import { Hero } from '~/common/components/layout/hero';
 import { Button } from '~/common/components/ui/button';
+import { getGptIdea } from '../queries';
 import type { Route } from './+types/idea';
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Idea | wemake' }];
+export const meta = ({ loaderData }: Route.MetaArgs) => {
+  return [
+    { title: `Idea #${loaderData?.idea.gpt_idea_id} | wemake` },
+    { name: 'description', content: 'View idea details' },
+  ];
 };
 
-export default function Idea() {
+export const loader = async ({ params }: Route.ComponentProps) => {
+  const { ideaId } = params;
+  const idea = await getGptIdea({ id: Number(ideaId) });
+  return { idea };
+};
+
+export default function Idea({ loaderData }: Route.ComponentProps) {
   return (
     <div>
-      <Hero title='Idea #id' subtitle='Find ideas for your next project' />
+      <Hero
+        title={`Idea #${loaderData.idea.gpt_idea_id}`}
+        subtitle='Find ideas for your next project'
+      />
       <div className='max-w-screen-sm mx-auto flex flex-col items-center gap-10'>
-        <p className='italic'>
-          "A startup that creates an AI-powered generated personal trainer, delivering customized
-          fitness recommendations. and tracking of progress using a mobile app to track workouts and
-          progress as well as a webiste to manage the business."
-        </p>
+        <p className='italic'>{loaderData.idea.idea}</p>
         <div className='flex items-center text-sm'>
           <div className='flex items-center gap-1'>
             <EyeIcon className='size-4' />
-            <span>123</span>
+            <span>{loaderData.idea.views}</span>
           </div>
           <DotIcon className='size-4' />
-          <span>12 hours ago</span>
+          <span>{DateTime.fromISO(loaderData.idea.created_at).toRelative()}</span>
           <DotIcon className='size-4' />
           <Button variant='outline' className='flex items-center gap-2'>
             <HeartIcon className='size-4' />
-            <span>12</span>
+            <span>{loaderData.idea.likes}</span>
           </Button>
         </div>
         <Button size='lg'>Claimed idea now &rarr;</Button>

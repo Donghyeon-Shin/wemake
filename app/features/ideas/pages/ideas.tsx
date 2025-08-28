@@ -1,5 +1,7 @@
+import { DateTime } from 'luxon';
 import { Hero } from '~/common/components/layout/hero';
 import { IdeaCard } from '~/features/ideas/components/idea-card';
+import { getGptIdeas } from '../queries';
 import type { Route } from './+types/ideas';
 
 export const meta: Route.MetaFunction = () => {
@@ -11,20 +13,25 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export default function Ideas() {
+export const loader = async () => {
+  const gptIdeas = await getGptIdeas({ limit: 10 });
+  return { gptIdeas };
+};
+
+export default function Ideas({ loaderData }: Route.ComponentProps) {
   return (
     <div className='space-y-10'>
       <Hero title='IdeasGPT' subtitle='Find ideas for your next project' />
       <div className='grid grid-cols-4 gap-4'>
-        {Array.from({ length: 10 }).map((_, index) => (
+        {loaderData.gptIdeas.map((idea) => (
           <IdeaCard
-            key={index}
-            id={`ideaId-${index}`}
-            title='A startup that creates an AI-powered generated personal trainer, delivering customized fitness recommendations. and tracking of progress using a mobile app to track workouts and progress as well as a webiste to manage the business.'
-            viewsCount={123}
-            likesCount={12}
-            postedAt='12 hours ago'
-            claimed={index % 2 === 0}
+            key={idea.gpt_idea_id}
+            id={idea.gpt_idea_id}
+            title={idea.idea}
+            viewsCount={idea.views}
+            likesCount={idea.likes}
+            postedAt={DateTime.fromISO(idea.created_at).toRelative() ?? ''}
+            claimed={idea.is_claimed}
           />
         ))}
       </div>

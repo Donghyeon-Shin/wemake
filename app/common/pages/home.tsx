@@ -2,6 +2,7 @@ import { DateTime } from 'luxon';
 import { Link, type MetaFunction } from 'react-router';
 import { PostCard } from '~/features/community/components/post-card';
 import { IdeaCard } from '~/features/ideas/components/idea-card';
+import { getGptIdeas } from '~/features/ideas/queries';
 import { JobCard } from '~/features/jobs/components/job-card';
 import { ProductCard } from '~/features/products/components/product-card';
 import { getProductsByDateRange } from '~/features/products/queries';
@@ -14,7 +15,7 @@ export const meta: MetaFunction = () => {
   return [{ title: 'Home | wemake' }, { name: 'description', content: 'Welcome to wemake' }];
 };
 
-export async function loader() {
+export const loader = async () => {
   const products = await getProductsByDateRange({
     startDate: DateTime.now().startOf('day'),
     endDate: DateTime.now().endOf('day'),
@@ -25,8 +26,11 @@ export async function loader() {
     limit: 7,
     sorting: 'newest',
   });
-  return { products, posts };
-}
+
+  const gptIdeas = await getGptIdeas({ limit: 7 });
+
+  return { products, posts, gptIdeas };
+};
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   return (
@@ -84,15 +88,15 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <Link to='/ideas'>Explore all ideas &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.gptIdeas.map((idea) => (
           <IdeaCard
-            key={index}
-            id={`ideaId-${index}`}
-            title='A startup that creates an AI-powered generated personal trainer, delivering customized fitness recommendations. and tracking of progress using a mobile app to track workouts and progress as well as a webiste to manage the business.'
-            viewsCount={123}
-            likesCount={12}
-            postedAt='12 hours ago'
-            claimed={index % 2 === 0}
+            key={idea.gpt_idea_id}
+            id={idea.gpt_idea_id}
+            title={idea.idea}
+            viewsCount={idea.views}
+            likesCount={idea.likes}
+            postedAt={DateTime.fromISO(idea.created_at).toRelative() ?? ''}
+            claimed={idea.is_claimed}
           />
         ))}
       </div>
