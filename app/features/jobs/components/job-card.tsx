@@ -4,7 +4,7 @@ import { Button } from '~/common/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '~/common/components/ui/card';
 
 export interface JobCardProps {
-  id: string;
+  id: number;
   title: string;
   company: string;
   companyLogoUrl: string;
@@ -42,10 +42,10 @@ export function JobCard({
           <CardTitle>{title}</CardTitle>
         </CardHeader>
         <CardContent>
-          <Badge variant='outline' className='mr-2'>
+          <Badge variant='outline' className='mr-2 capitalize'>
             {type}
           </Badge>
-          <Badge variant='outline' className='mr-2'>
+          <Badge variant='outline' className='mr-2 capitalize'>
             {positionLocation}
           </Badge>
         </CardContent>

@@ -8,6 +8,7 @@ import { ProductCard } from '~/features/products/components/product-card';
 import { getProductsByDateRange } from '~/features/products/queries';
 import { TeamCard } from '~/features/teams/components/team-card';
 import { getPosts } from '../../features/community/queries';
+import { getJobs } from '../../features/jobs/queries';
 import { Button } from '../components/ui/button';
 import type { Route } from './+types/home';
 
@@ -29,7 +30,9 @@ export const loader = async () => {
 
   const gptIdeas = await getGptIdeas({ limit: 7 });
 
-  return { products, posts, gptIdeas };
+  const jobs = await getJobs({ limit: 11 });
+
+  return { products, posts, gptIdeas, jobs };
 };
 
 export default function Home({ loaderData }: Route.ComponentProps) {
@@ -108,18 +111,18 @@ export default function Home({ loaderData }: Route.ComponentProps) {
             <Link to='/jobs'>Explore all jobs &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.jobs.map((job) => (
           <JobCard
-            key={index}
-            id={`jobId-${index}`}
-            company='Tesla'
-            companyLogoUrl='https://github.com/teslamotors.png'
-            companyHq='San Francisco, CA'
-            title='Senior Software Engineer'
-            postedAt='12 hours ago'
-            type='Full-time'
-            positionLocation='Remote'
-            salary='$100,000 - $120,000'
+            key={job.job_id}
+            id={job.job_id}
+            company={job.company_name}
+            companyLogoUrl={job.company_logo_url}
+            companyHq={job.company_location}
+            title={job.position}
+            postedAt={DateTime.fromISO(job.created_at).toRelative() ?? ''}
+            type={job.job_type}
+            positionLocation={job.location_type}
+            salary={job.salary_range}
           />
         ))}
       </div>
