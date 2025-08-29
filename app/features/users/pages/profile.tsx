@@ -1,5 +1,5 @@
 import { useOutletContext } from 'react-router';
-import { getUserProducts } from '../queries';
+import client from '~/supa-client';
 import type { Route } from './+types/profile';
 
 export const meta: Route.MetaFunction = () => {
@@ -7,8 +7,13 @@ export const meta: Route.MetaFunction = () => {
 };
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
-  const products = await getUserProducts({ username: params.username });
-  return { products };
+  await client.rpc('track_event', {
+    event_type: 'profile_view',
+    event_data: {
+      username: params.username,
+    },
+  });
+  return null;
 };
 
 export default function Profile() {

@@ -27,6 +27,7 @@ export default [
         route('/overview', 'features/products/pages/overview.tsx'),
         route('/reviews', 'features/products/pages/reviews.tsx'),
       ]),
+      route('/visits', 'features/products/pages/visit.tsx'),
     ]),
   ]),
   ...prefix('ideas', [

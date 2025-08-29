@@ -38,6 +38,27 @@ export type Database = {
         }
         Relationships: []
       }
+      event: {
+        Row: {
+          created_at: string | null
+          event_data: Json | null
+          event_id: string
+          event_type: Database["public"]["Enums"]["event_type"]
+        }
+        Insert: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_id?: string
+          event_type: Database["public"]["Enums"]["event_type"]
+        }
+        Update: {
+          created_at?: string | null
+          event_data?: Json | null
+          event_id?: string
+          event_type?: Database["public"]["Enums"]["event_type"]
+        }
+        Relationships: []
+      }
       followers: {
         Row: {
           created_at: string
@@ -627,7 +648,7 @@ export type Database = {
             referencedColumns: ["category_id"]
           },
           {
-            foreignKeyName: "products_profile_id_profiles_profile_id_fk"
+            foreignKeyName: "products_to_profiles"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -861,9 +882,16 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      track_event: {
+        Args: {
+          event_data: Json
+          event_type: Database["public"]["Enums"]["event_type"]
+        }
+        Returns: undefined
+      }
     }
     Enums: {
+      event_type: "product_view" | "product_visit" | "profile_view"
       job_types: "full-time" | "part-time" | "remote"
       location_types: "remote" | "in-person" | "hybrid"
       notification_type: "follow" | "review" | "reply" | "mention"
@@ -1004,6 +1032,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      event_type: ["product_view", "product_visit", "profile_view"],
       job_types: ["full-time", "part-time", "remote"],
       location_types: ["remote", "in-person", "hybrid"],
       notification_type: ["follow", "review", "reply", "mention"],
