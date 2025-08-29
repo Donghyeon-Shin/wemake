@@ -85,6 +85,20 @@
       "when": 1756372248901,
       "tag": "0011_fearless_young_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1756480839010,
+      "tag": "0012_equal_cobalt_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1756481781684,
+      "tag": "0013_far_pepper_potts",
+      "breakpoints": true
     }
   ]
 }

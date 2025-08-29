@@ -1,22 +1,28 @@
 import { PostCard } from '~/features/community/components/post-card';
+import { getUserPosts } from '../queries';
 import type { Route } from './+types/profile-post';
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Profile Post | wemake' }, { name: 'description', content: 'Profile Post' }];
 };
 
-export default function ProfilePost() {
+export const loader = async ({ params }: Route.LoaderArgs) => {
+  const posts = await getUserPosts({ username: params.username });
+  return { posts };
+};
+
+export default function ProfilePost({ loaderData }: Route.ComponentProps) {
   return (
     <div className='flex flex-col gap-5'>
-      {Array.from({ length: 5 }).map((_, index) => (
+      {loaderData.posts.map((post) => (
         <PostCard
-          key={index}
-          id={`postId-${index}`}
-          title='What is the best productivity tool?'
-          author='Donghyeon'
-          authorAvatarUrl='https://github.com/apple.png'
-          category='Productivity'
-          postedAt='12 hours ago'
+          key={post.post_id}
+          id={post.post_id}
+          title={post.title}
+          author={post.author}
+          authorAvatarUrl={post.author_avatar}
+          category={post.topic}
+          postedAt={post.created_at}
           expanded
         />
       ))}
