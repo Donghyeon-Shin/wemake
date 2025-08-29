@@ -14,7 +14,7 @@ import {
 import { Button } from '~/common/components/ui/button';
 import { Textarea } from '~/common/components/ui/textarea';
 import { Reply } from '../components/reply';
-import { getPostById } from '../queries';
+import { getPostById, getReplies } from '../queries';
 import type { Route } from './+types/post';
 
 export const meta: Route.MetaFunction = () => {
@@ -31,7 +31,8 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
   }
   const post = await getPostById({ postId: parsedData.postId });
-  return { post };
+  const replies = await getReplies({ postId: parsedData.postId });
+  return { post, replies };
 };
 
 export default function Post({ loaderData }: Route.ComponentProps) {
@@ -67,7 +68,7 @@ export default function Post({ loaderData }: Route.ComponentProps) {
               <ChevronUpIcon className='size-4 shrink-0' />
               <span>{loaderData.post.upvotes}</span>
             </Button>
-            <div className='space-y-20'>
+            <div className='space-y-20 w-full'>
               <div className='space-y-2'>
                 <h2 className='text-3xl font-bold'>{loaderData.post.title}</h2>
                 <div className='flex items-center gap-2.5 text-sm leading-tight text-muted-foreground'>
@@ -92,14 +93,18 @@ export default function Post({ loaderData }: Route.ComponentProps) {
               <div className='space-y-10'>
                 <h4 className='text-lg font-semibold'>{loaderData.post.replies} Replies</h4>
                 <div className='flex flex-col gap-5'>
-                  <Reply
-                    id='reply-1'
-                    username='nicolas'
-                    avatarUrl='https://github.com/shadcn.png'
-                    content='Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.'
-                    postedAt='12 hours ago'
-                    topLevel={true}
-                  />
+                  {loaderData.replies.map((reply) => (
+                    <Reply
+                      key={reply.post_reply_id}
+                      id={reply.post_reply_id}
+                      username={reply.user.username}
+                      avatarUrl={reply.user.avatar}
+                      content={reply.reply}
+                      postedAt={reply.created_at}
+                      topLevel={true}
+                      replies={reply.post_replies}
+                    />
+                  ))}
                 </div>
               </div>
             </div>

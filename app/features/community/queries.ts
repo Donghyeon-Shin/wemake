@@ -104,3 +104,15 @@ export const getPostById = async ({ postId }: { postId: number }) => {
   if (error) throw new Error(error.message);
   return data;
 };
+
+export const getReplies = async ({ postId }: { postId: number }) => {
+  const replyQuery = 'post_reply_id, reply, created_at, user:profiles(name, avatar, username)';
+  // 중첩 댓글 쿼리 추가(LEVEL이 최대 2까지 가능)
+  const { data, error } = await client
+    .from('post_replies')
+    .select(`${replyQuery}, post_replies(${replyQuery})`)
+    .eq('post_id', postId)
+    .is('parent_id', null);
+  if (error) throw new Error(error.message);
+  return data;
+};
