@@ -5,6 +5,7 @@ import { Hero } from '~/common/components/layout/hero';
 import ProductPagination from '~/common/components/layout/product-pagination';
 import { Button } from '~/common/components/ui/button';
 import { ProductCard } from '~/features/products/components/product-card';
+import { getProductPagesByDateRange, getProductsByDateRange } from '../queries';
 import type { Route } from './+types/weekly-leaderboards';
 
 const paramsSchema = z.object({
@@ -26,7 +27,7 @@ export const meta: Route.MetaFunction = ({ params }) => {
   ];
 };
 
-export const loader = ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
@@ -35,7 +36,7 @@ export const loader = ({ params }: Route.LoaderArgs) => {
     weekYear: parsedData.year,
     weekNumber: parsedData.week,
   });
-  console.log(date);
+
   if (!date.isValid) {
     throw data({ error_code: 'invalid_date', message: 'Invalid date' }, { status: 400 });
   }
@@ -43,7 +44,18 @@ export const loader = ({ params }: Route.LoaderArgs) => {
   if (date > today) {
     throw data({ error_code: 'future_date', message: 'Future date' }, { status: 400 });
   }
-  return { ...parsedData };
+  const url = new URL(request.url);
+  const products = await getProductsByDateRange({
+    startDate: date.startOf('week'),
+    endDate: date.endOf('week'),
+    page: Number(url.searchParams.get('page')) || 1,
+    limit: 15,
+  });
+  const totalPages = await getProductPagesByDateRange({
+    startDate: date.startOf('week'),
+    endDate: date.endOf('week'),
+  });
+  return { ...parsedData, products, totalPages };
 };
 
 export default function WeeklyLeaderboardsPage({ loaderData }: Route.ComponentProps) {
@@ -76,19 +88,19 @@ export default function WeeklyLeaderboardsPage({ loaderData }: Route.ComponentPr
         ) : null}
       </div>
       <div className='space-y-5 w-full max-w-screen-md mx-auto'>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.products.map((product) => (
           <ProductCard
-            key={index}
-            to={`/products/${index}`}
-            title={'Product Name'}
-            description={'Product Description'}
-            commentsCount={12}
-            viewsCount={12}
-            votesCount={120}
+            key={product.product_id}
+            to={`/products/${product.product_id}`}
+            title={product.name}
+            description={product.description}
+            reviewsCount={product.reviews}
+            viewsCount={product.views}
+            votesCount={product.upvotes}
           />
         ))}
       </div>
-      <ProductPagination totalPages={10} />
+      <ProductPagination totalPages={loaderData.totalPages} />
     </div>
   );
 }

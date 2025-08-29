@@ -1,4 +1,5 @@
 import { DotIcon, MessageCircleIcon } from 'lucide-react';
+import { DateTime } from 'luxon';
 import { useState } from 'react';
 import { Form, Link } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar';
@@ -6,15 +7,33 @@ import { Button } from '~/common/components/ui/button';
 import { Textarea } from '~/common/components/ui/textarea';
 
 interface ReplyProps {
-  id: string;
+  id: number;
   username: string;
-  avatarUrl: string;
+  avatarUrl: string | null;
   content: string;
   postedAt: string;
   topLevel: boolean;
+  replies?: {
+    post_reply_id: number;
+    reply: string;
+    created_at: string;
+    user: {
+      name: string;
+      avatar: string | null;
+      username: string;
+    };
+  }[];
 }
 
-export function Reply({ id, username, avatarUrl, content, postedAt, topLevel }: ReplyProps) {
+export function Reply({
+  id,
+  username,
+  avatarUrl,
+  content,
+  postedAt,
+  topLevel,
+  replies,
+}: ReplyProps) {
   const [replaying, setReplaying] = useState(false);
 
   const toggleReplaying = () => {
@@ -22,19 +41,21 @@ export function Reply({ id, username, avatarUrl, content, postedAt, topLevel }: 
   };
 
   return (
-    <div className='flex flex-col gap-2'>
-      <div className='flex items-center gap-5'>
+    <div className='flex flex-col gap-2 w-full'>
+      <div className='flex items-center gap-5 w-2/3'>
         <Avatar className='size-14'>
-          <AvatarImage src={avatarUrl} alt={username} />
+          {avatarUrl && <AvatarImage src={avatarUrl} alt={username} />}
           <AvatarFallback>{username.slice(0, 2).toUpperCase()}</AvatarFallback>
         </Avatar>
-        <div className='flex flex-col gap-4 items-start w-2/3'>
+        <div className='flex flex-col gap-4 items-start w-full'>
           <div className='flex gap-2 items-center'>
             <Link to={`/users/@${username}`} className='font-semibold'>
               <h4 className='font-medium'>{username}</h4>
             </Link>
             <DotIcon className='size-5' />
-            <span className='text-xs text-muted-foreground'>{postedAt}</span>
+            <span className='text-xs text-muted-foreground'>
+              {DateTime.fromISO(postedAt).toRelative()}
+            </span>
           </div>
           <p className='text-sm text-muted-foreground'>{content}</p>
           <Button
@@ -61,16 +82,18 @@ export function Reply({ id, username, avatarUrl, content, postedAt, topLevel }: 
           </div>
         </Form>
       )}
-      {topLevel && (
+      {topLevel && replies && (
         <div className='pl-20 w-full'>
-          <Reply
-            id='reply-2'
-            username='nicolas'
-            avatarUrl='https://github.com/shadcn.png'
-            content='Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quos.'
-            postedAt='12 hours ago'
-            topLevel={false}
-          />
+          {replies.map((reply) => (
+            <Reply
+              id={reply.post_reply_id}
+              username={reply.user.username}
+              avatarUrl={reply.user.avatar}
+              content={reply.reply}
+              postedAt={reply.created_at}
+              topLevel={false}
+            />
+          ))}
         </div>
       )}
     </div>

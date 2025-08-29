@@ -5,6 +5,7 @@ import ProductPagination from '~/common/components/layout/product-pagination';
 import { Button } from '~/common/components/ui/button';
 import { Input } from '~/common/components/ui/input';
 import { ProductCard } from '~/features/products/components/product-card';
+import { getPagesBySearch, getProductsBySearch } from '../queries';
 import type { Route } from './+types/search';
 
 const paramsSchema = z.object({
@@ -17,7 +18,7 @@ export const meta: Route.MetaFunction = () => [
   { name: 'description', content: 'Search for products' },
 ];
 
-export const loader = ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
   const url = new URL(request.url);
   const { success, data: parsedData } = paramsSchema.safeParse(
     Object.fromEntries(url.searchParams),
@@ -25,9 +26,15 @@ export const loader = ({ request }: Route.LoaderArgs) => {
   if (!success) {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
   }
+  if (parsedData.query === '') {
+    return { products: [], totalPages: 1 };
+  }
+  const products = await getProductsBySearch({ query: parsedData.query, page: parsedData.page });
+  const totalPages = await getPagesBySearch({ query: parsedData.query });
+  return { products, totalPages };
 };
 
-export default function SearchProductsPage() {
+export default function SearchProductsPage({ loaderData }: Route.ComponentProps) {
   return (
     <div className='space-y-10'>
       <Hero title='Search' subtitle='Search for products by keywords.' />
@@ -36,19 +43,19 @@ export default function SearchProductsPage() {
         <Button type='submit'>Search</Button>
       </Form>
       <div className='space-y-5 w-full max-w-screen-md mx-auto'>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.products.map((product) => (
           <ProductCard
-            key={index}
-            to={`/products/${index}`}
-            title={'Product Name'}
-            description={'Product Description'}
-            commentsCount={12}
-            viewsCount={12}
-            votesCount={120}
+            key={product.product_id}
+            to={`/products/${product.product_id}`}
+            title={product.name}
+            description={product.tagline}
+            reviewsCount={product.reviews}
+            viewsCount={product.views}
+            votesCount={product.upvotes}
           />
         ))}
       </div>
-      <ProductPagination totalPages={10} />
+      <ProductPagination totalPages={loaderData.totalPages} />
     </div>
   );
 }

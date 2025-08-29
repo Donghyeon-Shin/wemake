@@ -34,7 +34,7 @@ export const profiles = pgTable('profiles', {
   avatar: text(),
   name: text().notNull(),
   username: text().notNull(),
-  handline: text(),
+  headline: text(),
   bio: text(),
   role: roles().default('developer').notNull(),
   // 프로필 통계 정보 Json 타입으로 정의

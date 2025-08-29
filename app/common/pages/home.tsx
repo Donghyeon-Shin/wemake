@@ -1,16 +1,42 @@
+import { DateTime } from 'luxon';
 import { Link, type MetaFunction } from 'react-router';
 import { PostCard } from '~/features/community/components/post-card';
+import { getPosts } from '~/features/community/queries';
 import { IdeaCard } from '~/features/ideas/components/idea-card';
+import { getGptIdeas } from '~/features/ideas/queries';
 import { JobCard } from '~/features/jobs/components/job-card';
+import { getJobs } from '~/features/jobs/queries';
 import { ProductCard } from '~/features/products/components/product-card';
+import { getProductsByDateRange } from '~/features/products/queries';
 import { TeamCard } from '~/features/teams/components/team-card';
+import { getTeams } from '~/features/teams/queries';
 import { Button } from '../components/ui/button';
+import type { Route } from './+types/home';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'Home | wemake' }, { name: 'description', content: 'Welcome to wemake' }];
 };
 
-export default function Home() {
+export const loader = async () => {
+  const [products, posts, gptIdeas, jobs, teams] = await Promise.all([
+    getProductsByDateRange({
+      startDate: DateTime.now().startOf('day'),
+      endDate: DateTime.now().endOf('day'),
+      limit: 7,
+    }),
+    getPosts({
+      limit: 7,
+      sorting: 'newest',
+    }),
+    getGptIdeas({ limit: 7 }),
+    getJobs({ limit: 11 }),
+    getTeams({ limit: 7 }),
+  ]);
+
+  return { products, posts, gptIdeas, jobs, teams };
+};
+
+export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <div className='px-20 space-y-40'>
       <div className='grid grid-cols-3 gap-4'>
@@ -23,15 +49,15 @@ export default function Home() {
             <Link to='/products/leaderboard'>Explore all products &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.products.map((product) => (
           <ProductCard
-            key={index}
-            to={`/products/${index}`}
-            title={'Product Name'}
-            description={'Product Description'}
-            commentsCount={12}
-            viewsCount={12}
-            votesCount={120}
+            key={product.product_id}
+            to={`/products/${product.product_id}`}
+            title={product.name}
+            description={product.description}
+            reviewsCount={product.reviews}
+            viewsCount={product.views}
+            votesCount={product.upvotes}
           />
         ))}
       </div>
@@ -45,15 +71,16 @@ export default function Home() {
             <Link to='/community'>Explore all discussions &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.posts.map((post) => (
           <PostCard
-            key={index}
-            id={`postId-${index}`}
-            title='What is the best productivity tool?'
-            author='Donghyeon'
-            authorAvatarUrl='https://github.com/apple.png'
-            category='Productivity'
-            postedAt='12 hours ago'
+            key={post.post_id}
+            id={post.post_id}
+            title={post.title}
+            author={post.author}
+            authorAvatarUrl={post.author_avatar}
+            category={post.topic}
+            postedAt={post.created_at}
+            votesCount={post.upvotes}
           />
         ))}
       </div>
@@ -65,15 +92,15 @@ export default function Home() {
             <Link to='/ideas'>Explore all ideas &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.gptIdeas.map((idea) => (
           <IdeaCard
-            key={index}
-            id={`ideaId-${index}`}
-            title='A startup that creates an AI-powered generated personal trainer, delivering customized fitness recommendations. and tracking of progress using a mobile app to track workouts and progress as well as a webiste to manage the business.'
-            viewsCount={123}
-            likesCount={12}
-            postedAt='12 hours ago'
-            claimed={index % 2 === 0}
+            key={idea.gpt_idea_id}
+            id={idea.gpt_idea_id}
+            title={idea.idea}
+            viewsCount={idea.views}
+            likesCount={idea.likes}
+            postedAt={DateTime.fromISO(idea.created_at).toRelative() ?? ''}
+            claimed={idea.is_claimed}
           />
         ))}
       </div>
@@ -85,18 +112,18 @@ export default function Home() {
             <Link to='/jobs'>Explore all jobs &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 11 }).map((_, index) => (
+        {loaderData.jobs.map((job) => (
           <JobCard
-            key={index}
-            id={`jobId-${index}`}
-            company='Tesla'
-            companyLogoUrl='https://github.com/teslamotors.png'
-            companyHq='San Francisco, CA'
-            title='Senior Software Engineer'
-            postedAt='12 hours ago'
-            type='Full-time'
-            positionLocation='Remote'
-            salary='$100,000 - $120,000'
+            key={job.job_id}
+            id={job.job_id}
+            company={job.company_name}
+            companyLogoUrl={job.company_logo_url}
+            companyHq={job.company_location}
+            title={job.position}
+            postedAt={DateTime.fromISO(job.created_at).toRelative() ?? ''}
+            type={job.job_type}
+            positionLocation={job.location_type}
+            salary={job.salary_range}
           />
         ))}
       </div>
@@ -110,14 +137,14 @@ export default function Home() {
             <Link to='/teams'>Explore all teams &rarr;</Link>
           </Button>
         </div>
-        {Array.from({ length: 7 }).map((_, index) => (
+        {loaderData.teams.map((team) => (
           <TeamCard
-            key={index}
-            id={`teamId-${index}`}
-            leaderName='donghyeon'
-            leaderAvatarUrl='https://github.com/donghyeon.png'
-            positions={['React Developer', 'Backend Developer', 'Product Manager']}
-            projectDescription='a new social media platform'
+            key={team.team_id}
+            id={team.team_id}
+            leaderName={team.team_leader.username}
+            leaderAvatarUrl={team.team_leader.avatar}
+            positions={team.roles.split(', ')}
+            projectDescription={team.product_description}
           />
         ))}
       </div>

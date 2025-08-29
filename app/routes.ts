@@ -5,12 +5,14 @@ export default [
   ...prefix('/products', [
     index('features/products/pages/products.tsx'),
     ...prefix('/leaderboards', [
-      index('features/products/pages/leaderboards.tsx'),
-      route('/yearly/:year', 'features/products/pages/yearly-leaderboards.tsx'),
-      route('/monthly/:year/:month', 'features/products/pages/monthly-leaderboards.tsx'),
-      route('/weekly/:year/:week', 'features/products/pages/weekly-leaderboards.tsx'),
-      route('/daily/:year/:month/:day', 'features/products/pages/daily-leaderboards.tsx'),
-      route('/:period', 'features/products/pages/leaderboards-redirection.tsx'),
+      layout('features/products/layouts/leaderboards-layout.tsx', [
+        index('features/products/pages/leaderboards.tsx'),
+        route('/yearly/:year', 'features/products/pages/yearly-leaderboards.tsx'),
+        route('/monthly/:year/:month', 'features/products/pages/monthly-leaderboards.tsx'),
+        route('/weekly/:year/:week', 'features/products/pages/weekly-leaderboards.tsx'),
+        route('/daily/:year/:month/:day', 'features/products/pages/daily-leaderboards.tsx'),
+        route('/:period', 'features/products/pages/leaderboards-redirection.tsx'),
+      ]),
     ]),
     ...prefix('/categories', [
       index('features/products/pages/categories.tsx'),
@@ -23,8 +25,9 @@ export default [
       index('features/products/pages/product-redirection.tsx'),
       layout('features/products/layouts/product-layout.tsx', [
         route('/overview', 'features/products/pages/overview.tsx'),
-        index('features/products/pages/reviews.tsx'),
+        route('/reviews', 'features/products/pages/reviews.tsx'),
       ]),
+      route('/visits', 'features/products/pages/visit.tsx'),
     ]),
   ]),
   ...prefix('ideas', [
@@ -78,8 +81,8 @@ export default [
       ]),
     ]),
   ]),
-  layout('features/users/layouts/profile-layout.tsx', [
-    ...prefix('/users/:username', [
+  ...prefix('/users/:username', [
+    layout('features/users/layouts/profile-layout.tsx', [
       index('features/users/pages/profile.tsx'),
       route('/products', 'features/users/pages/profile-product.tsx'),
       route('/posts', 'features/users/pages/profile-post.tsx'),

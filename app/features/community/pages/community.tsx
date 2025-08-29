@@ -1,6 +1,7 @@
 import { ChevronDownIcon } from 'lucide-react';
 import { Suspense } from 'react';
-import { Await, Form, Link, useSearchParams } from 'react-router';
+import { Await, data, Form, Link, useSearchParams } from 'react-router';
+import { z } from 'zod';
 import { Hero } from '~/common/components/layout/hero';
 import { Button } from '~/common/components/ui/button';
 import {
@@ -19,10 +20,33 @@ export const meta: Route.MetaFunction = () => {
   return [{ title: 'Community | wemake' }];
 };
 
-export const loader = async () => {
+const searchParamsSchema = z.object({
+  sorting: z.enum(['newest', 'popular']).default('newest'),
+  period: z.enum(['all', 'day', 'week', 'month', 'year']).default('all'),
+  keyword: z.string().optional(),
+  topic: z.string().optional(),
+});
+
+export const loader = async ({ request }: Route.LoaderArgs) => {
   // const [topics, posts] = await Promise.all([getTopics(), getPosts()]); // 최적화 동시 처리
   const topics = getTopics(); // await 처리하지 않아서 바로 return 됨 -> Loader에서 바로 넘어감
-  const posts = getPosts();
+
+  const url = new URL(request.url);
+  const { success, data: parsedData } = searchParamsSchema.safeParse(
+    Object.fromEntries(url.searchParams),
+  );
+
+  if (!success) {
+    throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
+  }
+
+  const posts = getPosts({
+    limit: 20,
+    sorting: parsedData.sorting,
+    period: parsedData.period,
+    keyword: parsedData.keyword,
+    topic: parsedData.topic,
+  });
   return { topics, posts };
 };
 
@@ -87,7 +111,7 @@ export default function Community({ loaderData }: Route.ComponentProps) {
                 )}
               </div>
               <Form className='w-2/3'>
-                <Input type='text' name='search' placeholder='Search for discussions' />
+                <Input type='text' name='keyword' placeholder='Search for discussions' />
               </Form>
             </div>
             <Button asChild>

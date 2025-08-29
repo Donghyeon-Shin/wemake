@@ -7,7 +7,8 @@ SELECT
     profiles.name AS author,
     profiles.avatar AS author_avatar,
     profiles.username AS author_username,
-    posts.upvotes
+    posts.upvotes,
+    topics.slug AS topic_slug
 FROM posts
 INNER JOIN topics USING (topic_id)
 INNER JOIN profiles USING (profile_id)
