@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from '~/common/components/ui/dropdown-menu';
 import { Input } from '~/common/components/ui/input';
+import { makeSSRClient } from '~/supa-client';
 import { PostCard } from '../components/post-card';
 import { PERIOD_OPTIONS, SORT_OPTIONS } from '../constants';
 import { getPosts, getTopics } from '../queries';
@@ -29,7 +30,8 @@ const searchParamsSchema = z.object({
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   // const [topics, posts] = await Promise.all([getTopics(), getPosts()]); // 최적화 동시 처리
-  const topics = getTopics(); // await 처리하지 않아서 바로 return 됨 -> Loader에서 바로 넘어감
+  const { client, headers } = makeSSRClient(request);
+  const topics = getTopics(client); // await 처리하지 않아서 바로 return 됨 -> Loader에서 바로 넘어감
 
   const url = new URL(request.url);
   const { success, data: parsedData } = searchParamsSchema.safeParse(
@@ -40,7 +42,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
   }
 
-  const posts = getPosts({
+  const posts = getPosts(client, {
     limit: 20,
     sorting: parsedData.sorting,
     period: parsedData.period,

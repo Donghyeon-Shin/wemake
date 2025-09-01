@@ -5,8 +5,9 @@ import { Hero } from '~/common/components/layout/hero';
 import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar';
 import { Badge } from '~/common/components/ui/badge';
 import { Button } from '~/common/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../../../common/components/ui/card';
-import { InputPair } from '../../../common/components/ui/input-pair';
+import { Card, CardContent, CardHeader, CardTitle } from '~/common/components/ui/card';
+import { InputPair } from '~/common/components/ui/input-pair';
+import { makeSSRClient } from '~/supa-client';
 import { getTeamById } from '../queries';
 import type { Route } from './+types/team';
 
@@ -18,12 +19,13 @@ const paramsSchema = z.object({
   teamId: z.coerce.number(),
 });
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
   }
-  const team = await getTeamById({ teamId: parsedData.teamId });
+  const team = await getTeamById(client, { teamId: parsedData.teamId });
   return { team };
 };
 

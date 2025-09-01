@@ -13,6 +13,7 @@ import {
 } from '~/common/components/ui/breadcrumb';
 import { Button } from '~/common/components/ui/button';
 import { Textarea } from '~/common/components/ui/textarea';
+import { makeSSRClient } from '~/supa-client';
 import { Reply } from '../components/reply';
 import { getPostById, getReplies } from '../queries';
 import type { Route } from './+types/post';
@@ -25,13 +26,14 @@ const paramsSchema = z.object({
   postId: z.coerce.number(),
 });
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
   }
-  const post = await getPostById({ postId: parsedData.postId });
-  const replies = await getReplies({ postId: parsedData.postId });
+  const post = await getPostById(client, { postId: parsedData.postId });
+  const replies = await getReplies(client, { postId: parsedData.postId });
   return { post, replies };
 };
 

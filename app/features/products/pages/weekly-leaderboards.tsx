@@ -5,6 +5,7 @@ import { Hero } from '~/common/components/layout/hero';
 import ProductPagination from '~/common/components/layout/product-pagination';
 import { Button } from '~/common/components/ui/button';
 import { ProductCard } from '~/features/products/components/product-card';
+import { makeSSRClient } from '~/supa-client';
 import { getProductPagesByDateRange, getProductsByDateRange } from '../queries';
 import type { Route } from './+types/weekly-leaderboards';
 
@@ -28,6 +29,7 @@ export const meta: Route.MetaFunction = ({ params }) => {
 };
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
@@ -45,13 +47,13 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     throw data({ error_code: 'future_date', message: 'Future date' }, { status: 400 });
   }
   const url = new URL(request.url);
-  const products = await getProductsByDateRange({
+  const products = await getProductsByDateRange(client, {
     startDate: date.startOf('week'),
     endDate: date.endOf('week'),
     page: Number(url.searchParams.get('page')) || 1,
     limit: 15,
   });
-  const totalPages = await getProductPagesByDateRange({
+  const totalPages = await getProductPagesByDateRange(client, {
     startDate: date.startOf('week'),
     endDate: date.endOf('week'),
   });
