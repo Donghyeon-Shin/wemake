@@ -1,4 +1,5 @@
-import { Form, Link } from 'react-router';
+import { Loader2Icon } from 'lucide-react';
+import { Form, Link, useNavigation } from 'react-router';
 import { Button } from '~/common/components/ui/button';
 import { InputPair } from '~/common/components/ui/input-pair';
 import type { Route } from './+types/login';
@@ -7,7 +8,21 @@ export const meta: Route.MetaFunction = () => {
   return [{ title: 'Login | wemake' }];
 };
 
-export default function Login() {
+// Post 요청 시 실행되는 함수( 함수명은 고정이다. )
+export const action = async ({ request }: Route.ActionArgs) => {
+  await new Promise((resolve) => setTimeout(resolve, 4000));
+  const formData = await request.formData();
+  const email = formData.get('email') as string;
+  const password = formData.get('password') as string;
+  return {
+    message: 'Error wrong password',
+  };
+};
+
+export default function Login({ actionData }: Route.ComponentProps) {
+  const navigate = useNavigation();
+  const isSubmitted = navigate.state === 'submitting';
+
   return (
     <div className='relative flex flex-col items-center justify-center h-full'>
       <Button variant='ghost' asChild className='absolute top-8 right-8'>
@@ -15,7 +30,7 @@ export default function Login() {
       </Button>
       <div className='flex flex-col items-center justify-center gap-10 w-full max-w-md'>
         <h1 className='text-2xl font-semibold'>Login to your account</h1>
-        <Form className='w-full space-y-4'>
+        <Form className='w-full space-y-4' method='post'>
           <InputPair
             label='Email'
             description='Enter your email'
@@ -33,8 +48,9 @@ export default function Login() {
             id='password'
             required
           />
-          <Button type='submit' className='w-full'>
-            Login
+          {actionData?.message && <p className='text-sm text-red-500'>{actionData.message}</p>}
+          <Button type='submit' className='w-full' disabled={isSubmitted}>
+            {isSubmitted ? <Loader2Icon className='animate-spin' /> : 'Login'}
           </Button>
         </Form>
       </div>

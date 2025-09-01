@@ -284,7 +284,7 @@ export default function Navigation({
       ) : (
         <div className='flex items-center gap-4'>
           <Button asChild variant='secondary'>
-            <Link to='/login'>Login</Link>
+            <Link to='/auth/login'>Login</Link>
           </Button>
           <Button asChild>
             <Link to='/auth/join'>Join</Link>

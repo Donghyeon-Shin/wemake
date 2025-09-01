@@ -14,6 +14,7 @@ import type { Route } from './+types/root';
 import './app.css';
 import Navigation from './common/components/layout/navigation';
 import { cn } from './lib/utils';
+import { makeSSRClient } from './supa-client';
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -52,11 +53,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request);
+  const {
+    data: { user },
+  } = await client.auth.getUser();
+  return { user };
+};
+
 // 각 페이지의 내용
-export default function App() {
+export default function App({ loaderData }: Route.ComponentProps) {
   const { pathname } = useLocation();
   const navigation = useNavigation();
   const isLoading = navigation.state === 'loading';
+  const isLoggedIn = !!loaderData.user;
   return (
     <div
       className={cn(
@@ -65,7 +75,7 @@ export default function App() {
       )}
     >
       {pathname.includes('/auth') ? null : (
-        <Navigation isLoggedIn={true} hasNotifications={true} hasMessages={true} />
+        <Navigation isLoggedIn={isLoggedIn} hasNotifications={true} hasMessages={true} />
       )}
       <Outlet />
     </div>
