@@ -13,6 +13,7 @@ import { Settings } from 'luxon';
 import type { Route } from './+types/root';
 import './app.css';
 import Navigation from './common/components/layout/navigation';
+import { getUserByProfileId } from './features/users/queries';
 import { cn } from './lib/utils';
 import { makeSSRClient } from './supa-client';
 
@@ -58,7 +59,11 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   const {
     data: { user },
   } = await client.auth.getUser();
-  return { user };
+  if (user) {
+    const profile = await getUserByProfileId(client, { profileId: user?.id });
+    return { user, profile };
+  }
+  return { user: null, profile: null };
 };
 
 // 각 페이지의 내용
@@ -75,7 +80,14 @@ export default function App({ loaderData }: Route.ComponentProps) {
       )}
     >
       {pathname.includes('/auth') ? null : (
-        <Navigation isLoggedIn={isLoggedIn} hasNotifications={true} hasMessages={true} />
+        <Navigation
+          isLoggedIn={isLoggedIn}
+          name={loaderData.profile?.name}
+          username={loaderData.profile?.username}
+          avatar={loaderData.profile?.avatar}
+          hasNotifications={true}
+          hasMessages={true}
+        />
       )}
       <Outlet />
     </div>
