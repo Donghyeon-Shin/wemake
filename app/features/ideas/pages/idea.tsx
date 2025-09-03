@@ -2,6 +2,7 @@ import { DotIcon, EyeIcon, HeartIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { Hero } from '~/common/components/layout/hero';
 import { Button } from '~/common/components/ui/button';
+import { makeSSRClient } from '~/supa-client';
 import { getGptIdea } from '../queries';
 import type { Route } from './+types/idea';
 
@@ -12,9 +13,10 @@ export const meta = ({ loaderData }: Route.MetaArgs) => {
   ];
 };
 
-export const loader = async ({ params }: Route.ComponentProps) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const { ideaId } = params;
-  const idea = await getGptIdea({ id: Number(ideaId) });
+  const idea = await getGptIdea(client, { id: Number(ideaId) });
   return { idea };
 };
 

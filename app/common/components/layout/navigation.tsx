@@ -151,10 +151,16 @@ const menus: {
 
 export default function Navigation({
   isLoggedIn,
+  name,
+  username,
+  avatar,
   hasNotifications,
   hasMessages,
 }: {
   isLoggedIn: boolean;
+  name?: string;
+  username?: string;
+  avatar?: string | null;
   hasNotifications: boolean;
   hasMessages: boolean;
 }) {
@@ -241,14 +247,14 @@ export default function Navigation({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar>
-                <AvatarImage src='https://github.com/Donghyeon-shin.png' />
-                <AvatarFallback>N</AvatarFallback>
+                {avatar && <AvatarImage src={avatar} />}
+                <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
               </Avatar>
             </DropdownMenuTrigger>
             <DropdownMenuContent className='w-56'>
               <DropdownMenuLabel className='flex flex-col'>
-                <span className='font-semibold'>Donghyeon Shin</span>
-                <span className='text-xs text-muted-foreground'>shindong0321@gmail.com</span>
+                <span className='font-semibold'>{name}</span>
+                <span className='text-xs text-muted-foreground'>@{username}</span>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
@@ -273,7 +279,7 @@ export default function Navigation({
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild className='cursor-pointer'>
-                <Link to='/logout'>
+                <Link to='/auth/logout'>
                   <LogOutIcon className='size-4 mr-2' />
                   Logout
                 </Link>
@@ -284,7 +290,7 @@ export default function Navigation({
       ) : (
         <div className='flex items-center gap-4'>
           <Button asChild variant='secondary'>
-            <Link to='/login'>Login</Link>
+            <Link to='/auth/login'>Login</Link>
           </Button>
           <Button asChild>
             <Link to='/auth/join'>Join</Link>

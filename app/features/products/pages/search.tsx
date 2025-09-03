@@ -5,6 +5,7 @@ import ProductPagination from '~/common/components/layout/product-pagination';
 import { Button } from '~/common/components/ui/button';
 import { Input } from '~/common/components/ui/input';
 import { ProductCard } from '~/features/products/components/product-card';
+import { makeSSRClient } from '~/supa-client';
 import { getPagesBySearch, getProductsBySearch } from '../queries';
 import type { Route } from './+types/search';
 
@@ -20,6 +21,7 @@ export const meta: Route.MetaFunction = () => [
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const url = new URL(request.url);
+  const { client, headers } = makeSSRClient(request);
   const { success, data: parsedData } = paramsSchema.safeParse(
     Object.fromEntries(url.searchParams),
   );
@@ -29,8 +31,11 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   if (parsedData.query === '') {
     return { products: [], totalPages: 1 };
   }
-  const products = await getProductsBySearch({ query: parsedData.query, page: parsedData.page });
-  const totalPages = await getPagesBySearch({ query: parsedData.query });
+  const products = await getProductsBySearch(client, {
+    query: parsedData.query,
+    page: parsedData.page,
+  });
+  const totalPages = await getPagesBySearch(client, { query: parsedData.query });
   return { products, totalPages };
 };
 

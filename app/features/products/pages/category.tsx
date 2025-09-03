@@ -6,6 +6,7 @@ import { Button } from '~/common/components/ui/button';
 import { Input } from '~/common/components/ui/input';
 import { ProductCard } from '~/features/products/components/product-card';
 import { getCategory, getCategoryPages, getProductsByCategory } from '~/features/products/queries';
+import { makeSSRClient } from '~/supa-client';
 import type { Route } from './+types/category';
 
 export const meta: Route.MetaFunction = ({ params }) => [
@@ -23,6 +24,7 @@ const searchParamsSchema = z.object({
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const url = new URL(request.url);
+  const { client, headers } = makeSSRClient(request);
   const { success: searchParamsSuccess, data: searchParamsData } = searchParamsSchema.safeParse(
     Object.fromEntries(url.searchParams),
   );
@@ -31,12 +33,12 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   }
   const { data: paramsData, success: paramsSuccess } = await paramsSchema.safeParseAsync(params);
   if (!paramsSuccess) throw new Error('Invalid params');
-  const category = await getCategory({ categoryId: paramsData.categoryId });
-  const products = await getProductsByCategory({
+  const category = await getCategory(client, { categoryId: paramsData.categoryId });
+  const products = await getProductsByCategory(client, {
     categoryId: paramsData.categoryId,
     page: searchParamsData.page,
   });
-  const totalPages = await getCategoryPages({ categoryId: paramsData.categoryId });
+  const totalPages = await getCategoryPages(client, { categoryId: paramsData.categoryId });
   return { category, products, totalPages };
 };
 

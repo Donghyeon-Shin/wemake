@@ -3,6 +3,7 @@ import { Button } from '~/common/components/ui/button';
 import { Dialog, DialogTrigger } from '~/common/components/ui/dialog';
 import { CreateReviewDialog } from '~/features/products/components/create-review-dialog';
 import { ReviewCard } from '~/features/products/components/review-card';
+import { makeSSRClient } from '~/supa-client';
 import { getReviewsByProductId } from '../queries';
 import type { Route } from './+types/reviews';
 
@@ -13,9 +14,10 @@ export const meta: Route.MetaFunction = () => {
   ];
 };
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const { productId } = params;
-  const reviews = await getReviewsByProductId({ productId: Number(productId) });
+  const reviews = await getReviewsByProductId(client, { productId: Number(productId) });
   return { reviews };
 };
 

@@ -4,6 +4,7 @@ import { data } from 'react-router';
 import { z } from 'zod';
 import { Badge } from '~/common/components/ui/badge';
 import { Button } from '~/common/components/ui/button';
+import { makeSSRClient } from '~/supa-client';
 import { getJobById } from '../queries';
 import type { Route } from './+types/job';
 
@@ -15,12 +16,13 @@ const paramsSchema = z.object({
   jobId: z.coerce.number(),
 });
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
   }
-  const job = await getJobById({ jobId: parsedData.jobId });
+  const job = await getJobById(client, { jobId: parsedData.jobId });
   return { job };
 };
 

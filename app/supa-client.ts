@@ -1,8 +1,13 @@
-import { createClient } from '@supabase/supabase-js';
+import {
+  createBrowserClient,
+  createServerClient,
+  parseCookieHeader,
+  serializeCookieHeader,
+} from '@supabase/ssr';
 import type { MergeDeep, SetFieldType, SetNonNullable } from 'type-fest';
 import type { Database as SupabaseDatabase } from '../database.types';
 
-type Database = MergeDeep<
+export type Database = MergeDeep<
   SupabaseDatabase,
   {
     public: {
@@ -28,6 +33,38 @@ type Database = MergeDeep<
   }
 >;
 
-const client = createClient<Database>(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!);
+// 브라우저 클라이언트
+export const BrowserClient = createBrowserClient<Database>(
+  process.env.SUPABASE_URL!,
+  process.env.SUPABASE_ANON_KEY!,
+);
 
-export default client;
+// 유저가 요청하면 SSR 클라이언트를 생성
+export const makeSSRClient = (request: Request) => {
+  const headers = new Headers(request.headers);
+
+  const serverSideClient = createServerClient<Database>(
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          // supabase 쿠키 파싱(어떤 유저가 요청했는지 알 수 있음)
+          const cookies = parseCookieHeader(request.headers.get('Cookie') ?? '');
+          return cookies.map(({ name, value }) => ({ name, value: value ?? '' }));
+        },
+        setAll(cookiesToSet) {
+          // supabase 쿠키 설정 (유저의 브라우저에 쿠기 설정)
+          cookiesToSet.forEach(({ name, value, options }) => {
+            headers.append('Set-Cookie', serializeCookieHeader(name, value, options));
+          });
+        },
+      },
+    },
+  );
+
+  return {
+    client: serverSideClient,
+    headers,
+  };
+};

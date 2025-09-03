@@ -1,5 +1,6 @@
 import { Hero } from '~/common/components/layout/hero';
 import { TeamCard } from '~/features/teams/components/team-card';
+import { makeSSRClient } from '~/supa-client';
 import { getTeams } from '../queries';
 import type { Route } from './+types/teams';
 
@@ -7,8 +8,9 @@ export const meta: Route.MetaFunction = () => {
   return [{ title: 'Teams | wemake' }];
 };
 
-export const loader = async () => {
-  const teams = await getTeams({ limit: 8 });
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const teams = await getTeams(client, { limit: 8 });
   return { teams };
 };
 

@@ -3,6 +3,7 @@ import { data, Link, NavLink, Outlet } from 'react-router';
 import { z } from 'zod';
 import { Button, buttonVariants } from '~/common/components/ui/button';
 import { cn } from '~/lib/utils';
+import { makeSSRClient } from '~/supa-client';
 import { getProductById } from '../queries';
 import type { Route } from './+types/product-layout';
 
@@ -18,13 +19,14 @@ const paramsSchema = z.object({
   productId: z.coerce.number(),
 });
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
   const { success, data: parsedData } = paramsSchema.safeParse(params);
   if (!success) {
     throw data({ error_code: 'invalid_params', message: 'Invalid params' }, { status: 400 });
   }
   const productId = parsedData.productId;
-  const product = await getProductById({ productId });
+  const product = await getProductById(client, { productId });
   return { product };
 };
 

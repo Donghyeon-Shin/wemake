@@ -12,11 +12,13 @@ import {
 } from '~/common/components/ui/dialog';
 import { Textarea } from '~/common/components/ui/textarea';
 import { cn } from '~/lib/utils';
+import { makeSSRClient } from '~/supa-client';
 import { getUserProfile } from '../queries';
 import type { Route } from './+types/profile-layout';
 
-export const loader = async ({ params }: Route.LoaderArgs) => {
-  const user = await getUserProfile({ username: params.username });
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+  const user = await getUserProfile(client, { username: params.username });
   return { user };
 };
 

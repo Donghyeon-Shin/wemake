@@ -12,25 +12,28 @@ import { TeamCard } from '~/features/teams/components/team-card';
 import { getTeams } from '~/features/teams/queries';
 import { Button } from '../components/ui/button';
 import type { Route } from './+types/home';
+import { makeSSRClient } from '~/supa-client';
 
 export const meta: MetaFunction = () => {
   return [{ title: 'Home | wemake' }, { name: 'description', content: 'Welcome to wemake' }];
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client, headers } = makeSSRClient(request);
+
   const [products, posts, gptIdeas, jobs, teams] = await Promise.all([
-    getProductsByDateRange({
+    getProductsByDateRange(client, {
       startDate: DateTime.now().startOf('day'),
       endDate: DateTime.now().endOf('day'),
       limit: 7,
     }),
-    getPosts({
+    getPosts(client, {
       limit: 7,
       sorting: 'newest',
     }),
-    getGptIdeas({ limit: 7 }),
-    getJobs({ limit: 11 }),
-    getTeams({ limit: 7 }),
+    getGptIdeas(client, { limit: 7 }),
+    getJobs(client, { limit: 11 }),
+    getTeams(client, { limit: 7 }),
   ]);
 
   return { products, posts, gptIdeas, jobs, teams };

@@ -42,6 +42,7 @@ export default [
   ...prefix('/auth', [
     layout('features/auth/layouts/auth-layout.tsx', [
       route('/login', 'features/auth/pages/login.tsx'),
+      route('/logout', 'features/auth/pages/logout.tsx'),
       route('/join', 'features/auth/pages/join.tsx'),
       ...prefix('/otp', [
         route('/start', 'features/auth/pages/otp-start.tsx'),
