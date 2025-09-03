@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { Button } from '~/common/components/ui/button';
 import { InputPair } from '~/common/components/ui/input-pair';
 import { makeSSRClient } from '~/supa-client';
+import { AuthButtons } from '../components/auth-buttons';
 import type { Route } from './+types/login';
 
 export const meta: Route.MetaFunction = () => {
@@ -86,6 +87,7 @@ export default function Login({ actionData }: Route.ComponentProps) {
             <p className='text-sm text-red-500'>{actionData.loginError}</p>
           )}
         </Form>
+        <AuthButtons />
       </div>
     </div>
   );
