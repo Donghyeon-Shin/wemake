@@ -22,7 +22,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   await getLoggedInUserId(client);
 };
 
-export const FormSchema = z.object({
+export const formSchema = z.object({
   position: z
     .string()
     .min(1, 'Position is required')
@@ -66,7 +66,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { client } = makeSSRClient(request);
   await getLoggedInUserId(client);
   const formData = await request.formData();
-  const { success, data: parsedData, error } = FormSchema.safeParse(Object.fromEntries(formData));
+  const { success, data: parsedData, error } = formSchema.safeParse(Object.fromEntries(formData));
   if (!success) {
     return { fieldErrors: z.flattenError(error).fieldErrors };
   }

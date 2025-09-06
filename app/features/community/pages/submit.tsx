@@ -21,7 +21,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   return { topics };
 };
 
-const FormSchema = z.object({
+const formSchema = z.object({
   title: z.string().min(1, 'Title is required').max(40, 'Title must be less than 40 characters'),
   category: z.string().min(1, 'Category is required'),
   content: z
@@ -34,7 +34,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { client } = makeSSRClient(request);
   const userId = await getLoggedInUserId(client);
   const formData = await request.formData();
-  const { success, data: parsedData, error } = FormSchema.safeParse(Object.fromEntries(formData));
+  const { success, data: parsedData, error } = formSchema.safeParse(Object.fromEntries(formData));
   if (!success) {
     return {
       fieldErrors: z.flattenError(error).fieldErrors,
