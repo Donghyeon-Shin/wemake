@@ -29,11 +29,18 @@ export const createPost = async (
 
 export const createReply = async (
   client: SupabaseClient<Database>,
-  { postId, userId, reply }: { postId: string; userId: string; reply: string },
+  {
+    postId,
+    userId,
+    reply,
+    topLevelId,
+  }: { postId: string; userId: string; reply: string; topLevelId?: number },
 ) => {
-  const { error } = await client
-    .from('post_replies')
-    .insert({ post_id: parseInt(postId), profile_id: userId, reply });
+  const { error } = await client.from('post_replies').insert({
+    ...(topLevelId ? { parent_id: topLevelId } : { post_id: parseInt(postId) }), // topLevelId가 있으면 대댓글 참조 정보 전달, 없으면 post_id 전달
+    profile_id: userId,
+    reply,
+  });
   if (error) throw new Error(error.message);
   return;
 };

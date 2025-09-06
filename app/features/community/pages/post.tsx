@@ -31,6 +31,7 @@ const paramsSchema = z.object({
 
 const formSchema = z.object({
   reply: z.string().min(1, 'Reply is required'),
+  topLevelId: z.coerce.number().optional(),
 });
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
@@ -52,8 +53,8 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
   if (!success) {
     return { fieldErrors: z.flattenError(error).fieldErrors };
   }
-  const { reply } = parsedData;
-  await createReply(client, { postId: params.postId, userId, reply }); // Remix에서는 Form을 통해 action을 호출하면 자동으로 loader가 다시 호출된다.
+  const { reply, topLevelId } = parsedData;
+  await createReply(client, { postId: params.postId, userId, reply, topLevelId }); // Remix에서는 Form을 통해 action을 호출하면 자동으로 loader가 다시 호출된다.
   return { success: true };
 };
 
@@ -143,11 +144,13 @@ export default function Post({ loaderData, actionData }: Route.ComponentProps) {
                     <Reply
                       key={reply.post_reply_id}
                       id={reply.post_reply_id}
+                      name={reply.user.name}
                       username={reply.user.username}
                       avatarUrl={reply.user.avatar}
                       content={reply.reply}
                       postedAt={reply.created_at}
                       topLevel={true}
+                      topLevelId={reply.post_reply_id}
                       replies={reply.post_replies}
                     />
                   ))}
