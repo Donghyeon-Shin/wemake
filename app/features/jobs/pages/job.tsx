@@ -8,8 +8,12 @@ import { makeSSRClient } from '~/supa-client';
 import { getJobById } from '../queries';
 import type { Route } from './+types/job';
 
-export const meta: Route.MetaFunction = () => {
-  return [{ title: 'Job Details | wemake' }, { name: 'description', content: 'Job Details' }];
+export const meta: Route.MetaFunction = ({ loaderData }: Route.MetaArgs) => {
+  if (!loaderData) return [];
+  return [
+    { title: `${loaderData.job.position} | wemake` },
+    { name: 'description', content: loaderData.job.overview },
+  ];
 };
 
 const paramsSchema = z.object({

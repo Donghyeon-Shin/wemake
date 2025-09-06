@@ -16,7 +16,7 @@ export const meta: Route.MetaFunction = () => {
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { client } = makeSSRClient(request);
-  await getLoggedInUserId(client);
+  await getLoggedInUserId(client); // 로그인 확인
   const topics = await getTopics(client);
   return { topics };
 };
