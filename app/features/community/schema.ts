@@ -21,10 +21,14 @@ export const posts = pgTable('posts', {
   title: text().notNull(),
   content: text().notNull(),
   upvotes: bigint({ mode: 'number' }).default(0),
-  topic_id: bigint({ mode: 'number' }).references(() => topics.topic_id, {
-    onDelete: 'cascade',
-  }),
-  profile_id: uuid().references(() => profiles.profile_id, { onDelete: 'cascade' }),
+  topic_id: bigint({ mode: 'number' })
+    .references(() => topics.topic_id, {
+      onDelete: 'cascade',
+    })
+    .notNull(),
+  profile_id: uuid()
+    .references(() => profiles.profile_id, { onDelete: 'cascade' })
+    .notNull(),
   created_at: timestamp().notNull().defaultNow(),
   updated_at: timestamp().notNull().defaultNow(),
 });
