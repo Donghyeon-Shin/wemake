@@ -86,7 +86,9 @@ export const getReplies = async (
     .from('post_replies')
     .select(`${replyQuery}, post_replies(${replyQuery})`)
     .eq('post_id', postId)
+    .order('created_at', { ascending: false })
     .is('parent_id', null);
+
   if (error) throw new Error(error.message);
   return data;
 };

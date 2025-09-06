@@ -26,3 +26,14 @@ export const createPost = async (
   if (error) throw new Error(error.message);
   return data;
 };
+
+export const createReply = async (
+  client: SupabaseClient<Database>,
+  { postId, userId, reply }: { postId: string; userId: string; reply: string },
+) => {
+  const { error } = await client
+    .from('post_replies')
+    .insert({ post_id: parseInt(postId), profile_id: userId, reply });
+  if (error) throw new Error(error.message);
+  return;
+};

@@ -1,6 +1,7 @@
 import { ChevronUpIcon, DotIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
-import { data, Form, Link } from 'react-router';
+import { useEffect, useRef } from 'react';
+import { data, Form, Link, useOutletContext } from 'react-router';
 import z from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar';
 import { Badge } from '~/common/components/ui/badge';
@@ -13,8 +14,10 @@ import {
 } from '~/common/components/ui/breadcrumb';
 import { Button } from '~/common/components/ui/button';
 import { Textarea } from '~/common/components/ui/textarea';
+import { getLoggedInUserId } from '~/features/users/queries';
 import { makeSSRClient } from '~/supa-client';
 import { Reply } from '../components/reply';
+import { createReply } from '../mutations';
 import { getPostById, getReplies } from '../queries';
 import type { Route } from './+types/post';
 
@@ -24,6 +27,10 @@ export const meta: Route.MetaFunction = () => {
 
 const paramsSchema = z.object({
   postId: z.coerce.number(),
+});
+
+const formSchema = z.object({
+  reply: z.string().min(1, 'Reply is required'),
 });
 
 export const loader = async ({ request, params }: Route.LoaderArgs) => {
@@ -37,7 +44,33 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
   return { post, replies };
 };
 
-export default function Post({ loaderData }: Route.ComponentProps) {
+export const action = async ({ request, params }: Route.ActionArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const formData = await request.formData();
+  const { success, data: parsedData, error } = formSchema.safeParse(Object.fromEntries(formData));
+  if (!success) {
+    return { fieldErrors: z.flattenError(error).fieldErrors };
+  }
+  const { reply } = parsedData;
+  await createReply(client, { postId: params.postId, userId, reply }); // Remix에서는 Form을 통해 action을 호출하면 자동으로 loader가 다시 호출된다.
+  return { success: true };
+};
+
+export default function Post({ loaderData, actionData }: Route.ComponentProps) {
+  const { isLoggedIn, name, username, avatar } = useOutletContext<{
+    isLoggedIn: boolean;
+    name?: string;
+    username?: string;
+    avatar?: string;
+  }>();
+
+  const formRef = useRef<HTMLFormElement>(null);
+  useEffect(() => {
+    if (actionData && 'success' in actionData && actionData.success) {
+      formRef.current?.reset();
+    }
+  }, [actionData]);
   return (
     <div className='space-y-10'>
       <Breadcrumb>
@@ -82,16 +115,27 @@ export default function Post({ loaderData }: Route.ComponentProps) {
                 </div>
                 <p className='text-sm w-3/4 text-muted-foreground'>{loaderData.post.content}</p>
               </div>
-              <Form className='flex items-start gap-5 w-3/4'>
-                <Avatar className='size-14'>
-                  <AvatarImage src='https://github.com/shadcn.png' alt='John Doe' />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className='flex flex-col gap-5 items-end w-full'>
-                  <Textarea placeholder='Add a reply...' className='w-full resize-none' rows={10} />
-                  <Button type='submit'>Reply</Button>
-                </div>
-              </Form>
+              {isLoggedIn && (
+                <Form ref={formRef} className='flex items-start gap-5 w-3/4' method='post'>
+                  <Avatar className='size-14'>
+                    {avatar && <AvatarImage src={avatar} alt={name} />}
+                    <AvatarFallback>{name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div className='flex flex-col gap-5 items-end w-full'>
+                    <Textarea
+                      placeholder='Add a reply...'
+                      className='w-full resize-none'
+                      rows={10}
+                      name='reply'
+                      required
+                    />
+                    {actionData && 'fieldErrors' in actionData && (
+                      <p className='text-red-500'>{actionData.fieldErrors?.reply?.join(', ')}</p>
+                    )}
+                    <Button type='submit'>Reply</Button>
+                  </div>
+                </Form>
+              )}
               <div className='space-y-10'>
                 <h4 className='text-lg font-semibold'>{loaderData.post.replies} Replies</h4>
                 <div className='flex flex-col gap-5'>
