@@ -1,8 +1,11 @@
 import { DotIcon, EyeIcon, HeartIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
+import { Form, redirect } from 'react-router';
 import { Hero } from '~/common/components/layout/hero';
 import { Button } from '~/common/components/ui/button';
+import { getLoggedInUserId } from '~/features/users/queries';
 import { makeSSRClient } from '~/supa-client';
+import { claimIdea } from '../mutations';
 import { getGptIdea } from '../queries';
 import type { Route } from './+types/idea';
 
@@ -17,7 +20,22 @@ export const loader = async ({ request, params }: Route.LoaderArgs) => {
   const { client, headers } = makeSSRClient(request);
   const { ideaId } = params;
   const idea = await getGptIdea(client, { id: Number(ideaId) });
+  if (idea.is_claimed) {
+    throw redirect('/ideas');
+  }
   return { idea };
+};
+
+export const action = async ({ request, params }: Route.ActionArgs) => {
+  const { client } = makeSSRClient(request);
+  const { ideaId } = params;
+  const userId = await getLoggedInUserId(client);
+  const idea = await getGptIdea(client, { id: Number(ideaId) });
+  if (idea.is_claimed) {
+    return { ok: false };
+  }
+  await claimIdea(client, { ideaId: Number(ideaId), userId });
+  return redirect('/my/dashboard/ideas');
 };
 
 export default function Idea({ loaderData }: Route.ComponentProps) {
@@ -42,7 +60,11 @@ export default function Idea({ loaderData }: Route.ComponentProps) {
             <span>{loaderData.idea.likes}</span>
           </Button>
         </div>
-        <Button size='lg'>Claimed idea now &rarr;</Button>
+        {!loaderData.idea.is_claimed && (
+          <Form method='post'>
+            <Button size='lg'>Claimed idea now &rarr;</Button>
+          </Form>
+        )}
       </div>
     </div>
   );
