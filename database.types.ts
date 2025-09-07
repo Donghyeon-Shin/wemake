@@ -889,6 +889,14 @@ export type Database = {
           views: number
         }[]
       }
+      get_product_stats: {
+        Args: { product_id: string }
+        Returns: {
+          month: string
+          product_views: number
+          product_visit: number
+        }[]
+      }
       track_event: {
         Args: {
           event_data: Json

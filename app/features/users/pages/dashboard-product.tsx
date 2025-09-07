@@ -1,3 +1,4 @@
+import { redirect } from 'react-router';
 import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from '~/common/components/ui/card';
 import {
@@ -6,20 +7,33 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '~/common/components/ui/chart';
+import { makeSSRClient } from '~/supa-client';
+import { getLoggedInUserId } from '../queries';
 import type { Route } from './+types/dashboard-product';
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Dashboard Product | wemake' }];
 };
 
-const chartData = [
-  { month: 'January', views: 186, visitors: 100 },
-  { month: 'February', views: 305, visitors: 34 },
-  { month: 'March', views: 237, visitors: 65 },
-  { month: 'April', views: 73, visitors: 32 },
-  { month: 'May', views: 209, visitors: 64 },
-  { month: 'June', views: 214, visitors: 434 },
-];
+export const loader = async ({ request, params }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const { error: productError } = await client
+    .from('products')
+    .select('product_id')
+    .eq('profile_id', userId)
+    .eq('product_id', Number(params.productId))
+    .single();
+
+  if (productError) throw redirect('/my/dashboard/products'); // user가 생성한 제품으로 접근했을 때
+
+  const { data: stats, error: rpcError } = await client.rpc('get_product_stats', {
+    product_id: params.productId,
+  });
+  if (rpcError) throw new Error(rpcError.message);
+  return { chartData: stats };
+};
+
 const chartConfig = {
   views: {
     label: 'Page views',
@@ -31,7 +45,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function DashboardProduct() {
+export default function DashboardProduct({ loaderData }: Route.ComponentProps) {
   return (
     <div className='space-y-5'>
       <h1 className='text-2xl font-semibold mb-6'>Analytics</h1>
@@ -42,7 +56,7 @@ export default function DashboardProduct() {
             <ChartContainer config={chartConfig}>
               <AreaChart
                 accessibilityLayer
-                data={chartData}
+                data={loaderData.chartData}
                 margin={{
                   left: 12,
                   right: 12,
@@ -54,7 +68,7 @@ export default function DashboardProduct() {
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(value) => value.slice(0, 3)}
+                  padding={{ left: 12, right: 12 }}
                 />
                 <ChartTooltip
                   cursor={false}
@@ -62,13 +76,13 @@ export default function DashboardProduct() {
                   wrapperStyle={{ minWidth: '200px' }}
                 />
                 <Area
-                  dataKey='views'
+                  dataKey='product_views'
                   fill='var(--color-views)'
                   fillOpacity={0.3}
                   stroke='var(--color-views)'
                 />
                 <Area
-                  dataKey='visitors'
+                  dataKey='product_visit'
                   fill='var(--color-visitors)'
                   fillOpacity={0.3}
                   stroke='var(--color-visitors)'
