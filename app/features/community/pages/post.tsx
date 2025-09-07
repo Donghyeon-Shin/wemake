@@ -15,6 +15,7 @@ import {
 import { Button } from '~/common/components/ui/button';
 import { Textarea } from '~/common/components/ui/textarea';
 import { getLoggedInUserId } from '~/features/users/queries';
+import { cn } from '~/lib/utils';
 import { makeSSRClient } from '~/supa-client';
 import { Reply } from '../components/reply';
 import { createReply } from '../mutations';
@@ -100,7 +101,13 @@ export default function Post({ loaderData, actionData }: Route.ComponentProps) {
       <div className='grid grid-cols-6 gap-40 items-start'>
         <div className='col-span-4 space-y-10'>
           <div className='flex w-full items-start gap-10'>
-            <Button variant='outline' className='flex flex-col h-14'>
+            <Button
+              variant='outline'
+              className={cn(
+                'flex flex-col h-14',
+                loaderData.post.is_upvoted ? 'border-primary text-primary' : '',
+              )}
+            >
               <ChevronUpIcon className='size-4 shrink-0' />
               <span>{loaderData.post.upvotes}</span>
             </Button>
