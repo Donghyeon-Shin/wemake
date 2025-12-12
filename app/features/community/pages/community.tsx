@@ -135,6 +135,7 @@ export default function Community({ loaderData }: Route.ComponentProps) {
                       category={post.topic}
                       postedAt={post.created_at}
                       votesCount={post.upvotes}
+                      isUpvoted={post.is_upvoted}
                       expanded
                     />
                   ))}

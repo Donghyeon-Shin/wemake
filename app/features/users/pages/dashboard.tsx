@@ -6,20 +6,21 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from '~/common/components/ui/chart';
+import { makeSSRClient } from '~/supa-client';
+import { getLoggedInUserId } from '../queries';
 import type { Route } from './+types/dashboard';
 
 export const meta: Route.MetaFunction = () => {
   return [{ title: 'Dashboard | wemake' }];
 };
 
-const chartData = [
-  { month: 'January', views: 186 },
-  { month: 'February', views: 305 },
-  { month: 'March', views: 237 },
-  { month: 'April', views: 73 },
-  { month: 'May', views: 209 },
-  { month: 'June', views: 214 },
-];
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const { data: stats, error } = await client.rpc('get_dashboard_stats', { user_id: userId });
+  if (error) throw new Error(error.message);
+  return { chartData: stats };
+};
 const chartConfig = {
   views: {
     label: '👀',
@@ -27,7 +28,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export default function Dashboard() {
+export default function Dashboard({ loaderData }: Route.ComponentProps) {
   return (
     <div className='space-y-5'>
       <h1 className='text-2xl font-semibold mb-6'>Dashboard</h1>
@@ -38,7 +39,7 @@ export default function Dashboard() {
             <ChartContainer config={chartConfig}>
               <LineChart
                 accessibilityLayer
-                data={chartData}
+                data={loaderData.chartData}
                 margin={{
                   left: 12,
                   right: 12,
@@ -50,7 +51,7 @@ export default function Dashboard() {
                   tickLine={false}
                   axisLine={false}
                   tickMargin={8}
-                  tickFormatter={(value) => value.slice(0, 3)}
+                  padding={{ left: 12, right: 12 }}
                 />
                 <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
                 <Line

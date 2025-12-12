@@ -55,7 +55,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const { client } = makeSSRClient(request);
+  const { client } = makeSSRClient(request); // 유저 정보를 Load하거나 Database의 RLS(Row Level Security)을 위해서 필요
   const {
     data: { user },
   } = await client.auth.getUser();
@@ -89,7 +89,14 @@ export default function App({ loaderData }: Route.ComponentProps) {
           hasMessages={true}
         />
       )}
-      <Outlet />
+      <Outlet
+        context={{
+          isLoggedIn,
+          name: loaderData.profile?.name,
+          username: loaderData.profile?.username,
+          avatar: loaderData.profile?.avatar,
+        }}
+      />
     </div>
   );
 }
