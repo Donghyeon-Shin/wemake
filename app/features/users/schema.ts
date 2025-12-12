@@ -50,8 +50,12 @@ export const profiles = pgTable('profiles', {
 // Many to Many 관계 정의
 export const follwers = pgTable('followers', {
   // onDelete: 'cascade' : 참조하는 테이블의 데이터가 삭제되면 참조하는 테이블의 데이터도 삭제됨
-  follower_id: uuid().references(() => profiles.profile_id, { onDelete: 'cascade' }),
-  following_id: uuid().references(() => profiles.profile_id, { onDelete: 'cascade' }),
+  follower_id: uuid()
+    .references(() => profiles.profile_id, { onDelete: 'cascade' })
+    .notNull(),
+  following_id: uuid()
+    .references(() => profiles.profile_id, { onDelete: 'cascade' })
+    .notNull(),
   created_at: timestamp().notNull().defaultNow(),
 });
 
@@ -78,6 +82,7 @@ export const notifications = pgTable('notifications', {
   target_id: uuid()
     .references(() => profiles.profile_id, { onDelete: 'cascade' })
     .notNull(),
+  seen: boolean().default(false).notNull(),
   type: notificationTypeEnum().notNull(),
   created_at: timestamp().notNull().defaultNow(),
 });

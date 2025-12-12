@@ -134,6 +134,20 @@
       "when": 1757232386345,
       "tag": "0018_massive_zuras",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1765558792316,
+      "tag": "0019_sticky_ken_ellis",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1765559017894,
+      "tag": "0020_high_jackpot",
+      "breakpoints": true
     }
   ]
 }
