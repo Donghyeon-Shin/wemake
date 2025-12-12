@@ -44,3 +44,29 @@ export const createReply = async (
   if (error) throw new Error(error.message);
   return;
 };
+
+export const toggleUpvote = async (
+  client: SupabaseClient<Database>,
+  { postId, userId }: { postId: string; userId: string },
+) => {
+  // toggle upvote
+  const { count } = await client
+    .from('post_upvotes')
+    .select('*', { count: 'exact', head: true })
+    // count: 'exact' 옵션을 사용하여 정확한 개수를 반환, head: true 옵션을 사용하여 count 값만 전달
+    .eq('post_id', parseInt(postId))
+    .eq('profile_id', userId);
+
+  if (count === 0) {
+    await client.from('post_upvotes').insert({
+      post_id: parseInt(postId),
+      profile_id: userId,
+    });
+  } else {
+    await client
+      .from('post_upvotes')
+      .delete()
+      .eq('post_id', parseInt(postId))
+      .eq('profile_id', userId);
+  }
+};
