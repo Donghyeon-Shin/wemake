@@ -1,11 +1,12 @@
 import { EyeIcon } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link, useFetcher } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar';
 import { Button } from '~/common/components/ui/button';
 import { Card, CardFooter, CardHeader, CardTitle } from '~/common/components/ui/card';
 import { cn } from '../../../lib/utils';
 
 interface NotificationCardProps {
+  id: number;
   avatarSrc?: string;
   avatarFallback: string;
   userName: string;
@@ -18,6 +19,7 @@ interface NotificationCardProps {
 }
 
 export default function NotificationCard({
+  id,
   avatarSrc,
   avatarFallback,
   userName,
@@ -28,6 +30,8 @@ export default function NotificationCard({
   postTitle,
   payloadId,
 }: NotificationCardProps) {
+  const fetcher = useFetcher();
+  const optimisticSeen = fetcher.state === 'idle' ? seen : !seen;
   const getMessage = () => {
     switch (type) {
       case 'follow':
@@ -67,9 +71,13 @@ export default function NotificationCard({
         </div>
       </CardHeader>
       <CardFooter className='flex justify-end'>
-        <Button variant='outline' size='icon'>
-          <EyeIcon className='w-4 h-4' />
-        </Button>
+        {optimisticSeen ? null : (
+          <fetcher.Form method='post' action={`/my/notifications/${id}/see`}>
+            <Button variant='outline' size='icon'>
+              <EyeIcon className='w-4 h-4' />
+            </Button>
+          </fetcher.Form>
+        )}
       </CardFooter>
     </Card>
   );

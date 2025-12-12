@@ -76,6 +76,7 @@ export default [
     route('/profile', 'features/users/pages/my-profile.tsx'),
     route('/settings', 'features/users/pages/settings.tsx'),
     route('/notifications', 'features/users/pages/notifications.tsx'),
+    route('/notifications/:notificationId/see', 'features/users/pages/see-notification.tsx'), // api route to see a notification
     layout('features/users/layouts/messages-layout.tsx', [
       ...prefix('/messages', [
         index('features/users/pages/messages.tsx'),
