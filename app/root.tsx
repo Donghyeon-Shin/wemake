@@ -13,7 +13,7 @@ import { Settings } from 'luxon';
 import type { Route } from './+types/root';
 import './app.css';
 import Navigation from './common/components/layout/navigation';
-import { getUserByProfileId } from './features/users/queries';
+import { countNotifications, getUserByProfileId } from './features/users/queries';
 import { cn } from './lib/utils';
 import { makeSSRClient } from './supa-client';
 
@@ -61,9 +61,10 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   } = await client.auth.getUser();
   if (user) {
     const profile = await getUserByProfileId(client, { profileId: user?.id });
-    return { user, profile };
+    const count = await countNotifications(client, { userId: user?.id });
+    return { user, profile, count };
   }
-  return { user: null, profile: null };
+  return { user: null, profile: null, count: 0 };
 };
 
 // 각 페이지의 내용
@@ -85,7 +86,7 @@ export default function App({ loaderData }: Route.ComponentProps) {
           name={loaderData.profile?.name}
           username={loaderData.profile?.username}
           avatar={loaderData.profile?.avatar}
-          hasNotifications={true}
+          hasNotifications={loaderData.count > 0}
           hasMessages={true}
         />
       )}

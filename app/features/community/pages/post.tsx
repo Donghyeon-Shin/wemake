@@ -1,7 +1,7 @@
 import { ChevronUpIcon, DotIcon } from 'lucide-react';
 import { DateTime } from 'luxon';
 import { useEffect, useRef } from 'react';
-import { data, Form, Link, useOutletContext } from 'react-router';
+import { data, Form, Link, useFetcher, useOutletContext } from 'react-router';
 import z from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '~/common/components/ui/avatar';
 import { Badge } from '~/common/components/ui/badge';
@@ -60,6 +60,7 @@ export const action = async ({ request, params }: Route.ActionArgs) => {
 };
 
 export default function Post({ loaderData, actionData }: Route.ComponentProps) {
+  const fetcher = useFetcher(); // post 페이지의 fetcher
   const { isLoggedIn, name, username, avatar } = useOutletContext<{
     isLoggedIn: boolean;
     name?: string;
@@ -101,16 +102,18 @@ export default function Post({ loaderData, actionData }: Route.ComponentProps) {
       <div className='grid grid-cols-6 gap-40 items-start'>
         <div className='col-span-4 space-y-10'>
           <div className='flex w-full items-start gap-10'>
-            <Button
-              variant='outline'
-              className={cn(
-                'flex flex-col h-14',
-                loaderData.post.is_upvoted ? 'border-primary text-primary' : '',
-              )}
-            >
-              <ChevronUpIcon className='size-4 shrink-0' />
-              <span>{loaderData.post.upvotes}</span>
-            </Button>
+            <fetcher.Form method='post' action={`/community/${loaderData.post.post_id}/upvote`}>
+              <Button
+                variant='outline'
+                className={cn(
+                  'flex flex-col h-14',
+                  loaderData.post.is_upvoted ? 'border-primary text-primary' : '',
+                )}
+              >
+                <ChevronUpIcon className='size-4 shrink-0' />
+                <span>{loaderData.post.upvotes}</span>
+              </Button>
+            </fetcher.Form>
             <div className='space-y-20 w-full'>
               <div className='space-y-2'>
                 <h2 className='text-3xl font-bold'>{loaderData.post.title}</h2>

@@ -108,3 +108,39 @@ export const getLoggedInUserId = async (client: SupabaseClient<Database>) => {
   }
   return data.user.id;
 };
+
+export const getNotifications = async (
+  client: SupabaseClient<Database>,
+  { userId }: { userId: string },
+) => {
+  const { data, error } = await client
+    .from('notifications')
+    .select(
+      `
+      notification_id,
+      type,
+      source:profiles!source_id(profile_id, name, avatar),
+      product:products!product_id(product_id, name),
+      community_post:posts!post_id(post_id, title),
+      seen,
+      created_at
+      `,
+    )
+    .eq('target_id', userId)
+    .order('created_at', { ascending: false });
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+export const countNotifications = async (
+  client: SupabaseClient<Database>,
+  { userId }: { userId: string },
+) => {
+  const { count, error } = await client
+    .from('notifications')
+    .select('*', { count: 'exact', head: true })
+    .eq('target_id', userId)
+    .eq('seen', false);
+  if (error) throw new Error(error.message);
+  return count ?? 0;
+};
