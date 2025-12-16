@@ -16,7 +16,7 @@ export const getTeamById = async (
 ) => {
   const { data, error } = await client
     .from('teams')
-    .select('*, team_leader:profiles!inner(name, avatar, role)')
+    .select('*, team_leader:profiles!inner(name, avatar, role, username)')
     .eq('team_id', teamId)
     .single();
   if (error) throw error;

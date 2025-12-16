@@ -91,5 +91,6 @@ export default [
       route('/posts', 'features/users/pages/profile-post.tsx'),
       route('/ideas', 'features/users/pages/profile-idea.tsx'),
     ]),
+    route('/messages', 'features/users/pages/send-messages.tsx'),
   ]),
 ] satisfies RouteConfig;
