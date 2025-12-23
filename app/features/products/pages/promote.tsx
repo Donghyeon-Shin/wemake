@@ -27,36 +27,41 @@ export default function PromoteProductPage() {
   return (
     <div>
       <Hero title='Promote Your Product' subtitle='Boost your product visibility.' />
-      <Form className='max-w-screen-sm mx-auto flex flex-col gap-10 items-center'>
-        <SelectPair
-          label='Product'
-          description='The product you want to promote.'
-          placeholder='Select a product'
-          name='product'
-          required
-          options={[
-            { label: 'AI Dark Mode Maker', value: 'ai-dark-mode-maker' },
-            { label: 'AI Dark Mode Maker', value: 'ai-dark-mode-maker-1' },
-            { label: 'AI Dark Mode Maker', value: 'ai-dark-mode-maker-2' },
-          ]}
-        />
-        <div className='flex flex-col gap-2 items-center w-full'>
-          <div className='flex flex-col gap-1'>
-            <Label>Select a range of dates for promotion</Label>
-            <small className='text-muted-foreground text-center'>Minimum duration is 3 days</small>
-          </div>
-          <Calendar
-            mode='range'
-            selected={promotionPeriod}
-            onSelect={setPromotionPeriod}
-            min={3}
-            disabled={{ before: new Date() }}
+      <div className='grid gird-cols-6'>
+        <Form className='col-span-4 mx-auto flex flex-col gap-10 items-center'>
+          <SelectPair
+            label='Product'
+            description='The product you want to promote.'
+            placeholder='Select a product'
+            name='product'
+            required
+            options={[
+              { label: 'AI Dark Mode Maker', value: 'ai-dark-mode-maker' },
+              { label: 'AI Dark Mode Maker', value: 'ai-dark-mode-maker-1' },
+              { label: 'AI Dark Mode Maker', value: 'ai-dark-mode-maker-2' },
+            ]}
           />
-        </div>
-        <Button disabled={totalDays === 0} type='submit'>
-          Go to checkout {`($${totalDays * 20})`}
-        </Button>
-      </Form>
+          <div className='flex flex-col gap-2 items-center w-full'>
+            <div className='flex flex-col gap-1'>
+              <Label>Select a range of dates for promotion</Label>
+              <small className='text-muted-foreground text-center'>
+                Minimum duration is 3 days
+              </small>
+            </div>
+            <Calendar
+              mode='range'
+              selected={promotionPeriod}
+              onSelect={setPromotionPeriod}
+              min={3}
+              disabled={{ before: new Date() }}
+            />
+          </div>
+          <Button disabled={totalDays === 0} type='submit'>
+            Go to checkout {`($${totalDays * 20})`}
+          </Button>
+        </Form>
+        <aside className='col-span-2'></aside>
+      </div>
     </div>
   );
 }
