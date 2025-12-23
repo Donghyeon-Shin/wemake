@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router';
+import { Outlet, useOutletContext } from 'react-router';
 import {
   Sidebar,
   SidebarContent,
@@ -6,23 +6,38 @@ import {
   SidebarMenu,
   SidebarProvider,
 } from '~/common/components/ui/sidebar';
+import { makeSSRClient } from '~/supa-client';
 import { MessageCard } from '../components/MessageCard';
+import { getLoggedInUserId, getMessages } from '../queries';
+import type { Route } from './+types/messages-layout';
 
-export default function MessagesLayout() {
+export const loader = async ({ request }: Route.LoaderArgs) => {
+  const { client } = makeSSRClient(request);
+  const userId = await getLoggedInUserId(client);
+  const messages = await getMessages(client, { userId });
+  return { messages };
+};
+
+export default function MessagesLayout({ loaderData }: Route.ComponentProps) {
+  const { userId, name, avatar } = useOutletContext<{
+    userId: string;
+    name: string;
+    avatar: string;
+  }>();
   return (
     <SidebarProvider className='max-h-[calc(100vh-14rem)] h-[calc(100vh-14rem)] overflow-hidden min-h-full'>
       <Sidebar className='pt-16' variant='floating'>
         <SidebarContent>
           <SidebarGroup>
             <SidebarMenu>
-              {Array.from({ length: 20 }).map((_, index) => (
+              {loaderData.messages.map((message) => (
                 <MessageCard
-                  key={index}
-                  id={index.toString()}
-                  avatarSrc='https://github.com/shadcn.png'
-                  avatarFallback='CN'
-                  name='John Doe'
-                  lastMessageCount={index}
+                  key={message.message_room_id.toString()}
+                  id={message.message_room_id.toString()}
+                  avatarSrc={message.avatar}
+                  avatarFallback={message.name.charAt(0)}
+                  name={message.name}
+                  lastMessage={message.last_message ?? ''}
                 />
               ))}
             </SidebarMenu>
@@ -30,7 +45,7 @@ export default function MessagesLayout() {
         </SidebarContent>
       </Sidebar>
       <div className='w-full h-full'>
-        <Outlet />
+        <Outlet context={{ userId, name, avatar }} />
       </div>
     </SidebarProvider>
   );

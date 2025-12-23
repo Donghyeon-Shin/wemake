@@ -110,11 +110,15 @@ export default function Team({ loaderData }: Route.ComponentProps) {
             <span>🎂 Joined {DateTime.fromISO(loaderData.team.created_at).toRelative()}</span>
             <span>🚀 Launched {loaderData.team.team_size} products</span>
           </div>
-          <Form className='space-y-5'>
+          <Form
+            className='space-y-5'
+            method='post'
+            action={`/users/${loaderData.team.team_leader.username}/messages`}
+          >
             <InputPair
               label='Introduce yourself'
               description='Tell us about yourself'
-              name='introduction'
+              name='content'
               id='introduction'
               textarea
               placeholder='i.e I am a React Developer with 3 years of experience'
