@@ -80,7 +80,7 @@ export default [
     layout('features/users/layouts/messages-layout.tsx', [
       ...prefix('/messages', [
         index('features/users/pages/messages.tsx'),
-        route('/:messageId', 'features/users/pages/message.tsx'),
+        route('/:messageRoomId', 'features/users/pages/message.tsx'),
       ]),
     ]),
   ]),

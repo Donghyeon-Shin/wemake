@@ -157,3 +157,49 @@ export const getMessages = async (
   if (error) throw new Error(error.message);
   return data;
 };
+
+export const getMessagesByMessageRoomId = async (
+  client: SupabaseClient<Database>,
+  { messageRoomId, userId }: { messageRoomId: number; userId: string },
+) => {
+  // User가 해당 메시지 방에 속해있는지 확인
+  const { count, error: countError } = await client
+    .from('message_room_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('message_room_id', messageRoomId)
+    .eq('profile_id', userId);
+
+  if (countError) throw new Error(countError.message);
+  if (count === 0) throw new Error('Message room not found');
+
+  const { data, error } = await client
+    .from('messages')
+    .select('*, sender:profiles!sender_id(name, avatar, profile_id)')
+    .eq('message_room_id', messageRoomId)
+    .order('created_at', { ascending: true });
+  if (error) throw new Error(error.message);
+  return data;
+};
+
+export const getRoomsParticipant = async (
+  client: SupabaseClient<Database>,
+  { messageRoomId, userId }: { messageRoomId: number; userId: string },
+) => {
+  // User가 해당 메시지 방에 속해있는지 확인
+  const { count, error: countError } = await client
+    .from('message_room_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('message_room_id', messageRoomId)
+    .eq('profile_id', userId);
+  if (countError) throw new Error(countError.message);
+  if (count === 0) throw new Error('Message room not found');
+
+  const { data, error } = await client
+    .from('message_room_members')
+    .select('profile_id, profiles:profiles!profile_id(name, avatar)')
+    .eq('message_room_id', messageRoomId)
+    .neq('profile_id', userId)
+    .single();
+  if (error) throw new Error(error.message);
+  return data;
+};
