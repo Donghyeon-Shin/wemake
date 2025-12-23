@@ -7,7 +7,7 @@ interface MessageCardProps {
   avatarSrc?: string;
   avatarFallback: string;
   name: string;
-  lastMessageCount: number;
+  lastMessage: string;
 }
 
 export function MessageCard({
@@ -15,7 +15,7 @@ export function MessageCard({
   avatarSrc,
   avatarFallback,
   name,
-  lastMessageCount,
+  lastMessage,
 }: MessageCardProps) {
   const location = useLocation();
 
@@ -34,7 +34,7 @@ export function MessageCard({
             </Avatar>
             <div className='flex flex-col'>
               <p className='text-sm font-medium'>{name}</p>
-              <p className='text-xs text-muted-foreground'>Last message {lastMessageCount}</p>
+              <p className='text-xs text-muted-foreground'>{lastMessage}</p>
             </div>
           </div>
         </Link>
