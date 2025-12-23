@@ -37,10 +37,10 @@ export type Database = MergeDeep<
 >;
 
 // 브라우저 클라이언트
-export const BrowserClient = createBrowserClient<Database>(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_ANON_KEY!,
-);
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string;
+
+export const BrowserClient = createBrowserClient<Database>(supabaseUrl, supabaseAnonKey);
 
 // 유저가 요청하면 SSR 클라이언트를 생성
 export const makeSSRClient = (request: Request) => {
