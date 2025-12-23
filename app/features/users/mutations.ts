@@ -103,6 +103,14 @@ export const sendMessage = async (
     content,
   }: { messageRoomId: number; senderId: string; content: string },
 ) => {
+  const { count, error: countError } = await client
+    .from('message_room_members')
+    .select('*', { count: 'exact', head: true })
+    .eq('message_room_id', messageRoomId)
+    .eq('profile_id', senderId);
+  if (countError) throw new Error(countError.message);
+  if (count === 0) throw new Error('Sender not found in message room');
+
   const { error } = await client.from('messages').insert({
     message_room_id: messageRoomId,
     sender_id: senderId,
