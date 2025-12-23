@@ -2,7 +2,6 @@ import { loadTossPayments, type TossPaymentsWidgets } from '@tosspayments/tosspa
 import { DateTime } from 'luxon';
 import { useEffect, useRef, useState } from 'react';
 import type { DateRange } from 'react-day-picker';
-import { Form } from 'react-router';
 import { Hero } from '~/common/components/layout/hero';
 import { Calendar } from '~/common/components/ui/calendar';
 import { Label } from '~/common/components/ui/label';
@@ -48,18 +47,42 @@ export default function PromoteProductPage() {
   }, []);
 
   useEffect(() => {
-    if (widget.current) {
-      widget.current.setAmount({
-        value: totalDays * 200000,
-        currency: 'KRW',
-      });
-    }
+    const updateAmount = async () => {
+      if (widget.current) {
+        await widget.current.setAmount({
+          value: totalDays * 3,
+          currency: 'KRW',
+        });
+      }
+    };
+    updateAmount();
   }, [promotionPeriod]);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.target as HTMLFormElement);
+    const product = formData.get('product') as string;
+    if (!product || !promotionPeriod?.to || !promotionPeriod?.from) return;
+    await widget.current?.requestPayment({
+      orderId: crypto.randomUUID(),
+      orderName: `Promotion for ${product}`,
+      customerName: 'John Doe',
+      customerEmail: 'john.doe@example.com',
+      customerMobilePhone: '01012345678',
+      metadata: {
+        product,
+        promotionFrom: DateTime.fromJSDate(promotionPeriod.from).toISO(),
+        promotionTo: DateTime.fromJSDate(promotionPeriod.to).toISO(),
+      },
+      successUrl: `${window.location.origin}/products/promote/success`,
+      failUrl: `${window.location.origin}/products/promote/fail`,
+    });
+  };
   return (
     <div>
       <Hero title='Promote Your Product' subtitle='Boost your product visibility.' />
-      <div className='grid grid-cols-6 gap-10'>
-        <Form className='col-span-3 mx-auto flex flex-col gap-10 items-start'>
+      <form onSubmit={handleSubmit} method='post' className='grid grid-cols-6 gap-10'>
+        <div className='col-span-3 mx-auto flex flex-col gap-10 items-start'>
           <SelectPair
             label='Product'
             description='The product you want to promote.'
@@ -87,16 +110,16 @@ export default function PromoteProductPage() {
               disabled={{ before: new Date() }}
             />
           </div>
-        </Form>
+        </div>
         <aside className='col-span-3 px-20 flex flex-col items-center'>
           <div id='toss-payment-methods' className='w-full'></div>
           <div id='toss-payment-agreement' className='w-full'></div>
           <Button className='w-full mt-10' disabled={totalDays === 0} type='submit'>
             Check out{' '}
-            {(totalDays * 200000).toLocaleString('ko-KR', { style: 'currency', currency: 'KRW' })}
+            {(totalDays * 3).toLocaleString('ko-KR', { style: 'currency', currency: 'KRW' })}
           </Button>
         </aside>
-      </div>
+      </form>
     </div>
   );
 }
