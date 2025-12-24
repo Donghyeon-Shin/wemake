@@ -1,22 +1,25 @@
+import { sql } from 'drizzle-orm';
 import {
   bigint,
   boolean,
   jsonb,
   pgEnum,
-  pgSchema,
+  pgPolicy,
   pgTable,
   primaryKey,
   text,
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
+import { authenticatedRole, authUid, authUsers } from 'drizzle-orm/supabase';
 import { posts } from '../community/schema';
 import { products } from '../products/schema';
 
 // TypeScript에서 오류가 나지 않도록 가짜 테이블을 만들어줌, Supabase에서 이미 auth Table이 있기 때문에 해당 코드는 실제 적용되지 않음 (따라서 export 하지 않음)
-const users = pgSchema('auth').table('users', {
-  id: uuid().primaryKey(),
-});
+// const users = pgSchema('auth').table('users', {
+//   id: uuid().primaryKey(),
+// });
+// Drizzle의 RLS를 사용하면 authUser을 바로 참조할 수 있음
 
 export const roles = pgEnum('role', [
   'developer',
@@ -30,7 +33,7 @@ export const profiles = pgTable('profiles', {
   // 외래키 제약조건(Supabase에서는 auth Table에서 유저를 관리함, 따라서 이를 참조하는 테이블에서는 외래키 제약조건을 추가해줘야 함. auth Table에 없는 또 다른 Column을 만들기 위해)
   profile_id: uuid()
     .primaryKey()
-    .references(() => users.id, { onDelete: 'cascade' }),
+    .references(() => authUsers.id, { onDelete: 'cascade' }),
   avatar: text(),
   name: text().notNull(),
   username: text().notNull(),
@@ -119,3 +122,32 @@ export const messages = pgTable('messages', {
   seen: boolean().notNull().default(false),
   created_at: timestamp().notNull().defaultNow(),
 });
+
+// Drizzle Policy 예시
+export const todos = pgTable(
+  'todos',
+  {
+    todo_id: bigint({ mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    title: text().notNull(),
+    completed: boolean().notNull().default(false),
+    created_at: timestamp().notNull().defaultNow(),
+    updated_at: timestamp().notNull().defaultNow(),
+    profile_id: uuid()
+      .references(() => profiles.profile_id, { onDelete: 'cascade' })
+      .notNull(),
+  },
+  (table) => [
+    pgPolicy('todos-insert-policy', {
+      for: 'insert',
+      to: authenticatedRole,
+      as: 'permissive',
+      withCheck: sql`${authUid} = ${table.profile_id}`,
+    }),
+    pgPolicy('todos-select-policy', {
+      for: 'select',
+      to: authenticatedRole,
+      as: 'permissive',
+      using: sql`${authUid} = ${table.profile_id}`,
+    }),
+  ],
+);

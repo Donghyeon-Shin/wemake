@@ -155,6 +155,20 @@
       "when": 1765902682718,
       "tag": "0021_ambiguous_sprite",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1766565950856,
+      "tag": "0022_quiet_meggan",
+      "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1766566264315,
+      "tag": "0023_sad_firebird",
+      "breakpoints": true
     }
   ]
 }
